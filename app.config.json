@@ -1,0 +1,10 @@
+{
+	"apps": [
+		{
+			"name": "fblivetop",
+			"script": "npx",
+			"interpreter": "none",
+			"args": "serve -p 3000 -T"
+		}
+	]
+}
