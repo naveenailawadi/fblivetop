@@ -1,4 +1,6 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import Routes from '../constants/Routes';
 
 const Header = () => {
     return (
@@ -11,15 +13,6 @@ const Header = () => {
 
                 <div class="collapse navbar-collapse" id="navbarsExample07">
                     <ul class="navbar-nav mr-auto">
-                        <li class="nav-item active">
-                            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Link</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="lang-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">EN</a>
                             <div class="dropdown-menu" aria-labelledby="lang-dropdown">
@@ -28,9 +21,14 @@ const Header = () => {
                             </div>
                         </li>
                     </ul>
-                    <form class="form-inline my-2 my-md-0">
-                        <input class="form-control" type="text" placeholder="Search" aria-label="Search" />
-                    </form>
+                    <ul class="navbar-nav navbar-right">
+                        <li class="nav-item">
+                            <Link to={Routes.signIn.url} class="nav-link" href="#">Log In</Link>
+                        </li>
+                        <li class="nav-item">
+                            <Link to={Routes.signUp.url} class="nav-link" href="#">Register</Link>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </nav>

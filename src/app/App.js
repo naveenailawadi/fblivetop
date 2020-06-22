@@ -20,6 +20,7 @@ const App = () => {
 
   return (
     <div className="h-100">
+      <Header />
       <Suspense fallback={<LoadingScreen />}>
         <Switch>
           {isAuthenticated ? renderPrivateRoutes() : renderPublicRoutes()}

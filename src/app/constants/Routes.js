@@ -9,4 +9,9 @@ export default {
     title: 'Sign In',
     component: lazy(() => import('../pages/SignIn'))
   },
+  signUp: {
+    url: '/register',
+    title: 'Register',
+    component: lazy(() => import('../pages/SignUp'))
+  },
 };
