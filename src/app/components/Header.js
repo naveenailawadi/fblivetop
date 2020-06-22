@@ -3,12 +3,14 @@ import { Link, withRouter } from 'react-router-dom';
 import Routes from '../constants/Routes';
 import { getCurrentRoute } from '../appUtils';
 import { DataStoreContext } from '../../core/stores/DataStore'
+import { languagesKeys, languagesNames } from '../../core/constants/enums/languagesEnum';
 
 const Header = (props) => {
     const { location } = props;
     const dataStore = useContext(DataStoreContext);
-    const { authenticationStore } = dataStore;
+    const { authenticationStore, appStore } = dataStore;
     const { isAuthenticated, logOut } = authenticationStore;
+    const { data: { lang } } = appStore;
 
     const currentRoute = getCurrentRoute(location.pathname)
 
@@ -16,6 +18,10 @@ const Header = (props) => {
     const handleLogOut = () => {
         logOut();
         window.location.reload();
+    }
+
+    const handleLanguageChange = key => {
+        appStore.setLanguage(key);
     }
 
     return (
@@ -29,10 +35,11 @@ const Header = (props) => {
                 <div className="collapse navbar-collapse" id="navbarsExample07">
                     <ul className="navbar-nav mr-auto">
                         <li className="nav-item dropdown">
-                            <a className="nav-link dropdown-toggle" href="#" id="lang-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">EN</a>
+                            <a className="nav-link dropdown-toggle" href="#" id="lang-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{languagesNames[lang]}</a>
                             <div className="dropdown-menu" aria-labelledby="lang-dropdown">
-                                <a className="dropdown-item" href="#">CH</a>
-                                <a className="dropdown-item" href="#">ES</a>
+                                {Object.keys(languagesKeys).map(languageKey => (
+                                    <a key={languageKey} className="dropdown-item" href="#" onClick={() => handleLanguageChange(languageKey)}>{languagesNames[languageKey]}</a>
+                                ))}
                             </div>
                         </li>
                     </ul>

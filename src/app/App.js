@@ -10,12 +10,14 @@ import {
 } from 'react-router-dom';
 import { renderPrivateRoutes, renderPublicRoutes } from './appUtils';
 import Routes from './constants/Routes';
+import { withTranslation } from 'react-i18next';
 
 const LoadingScreen = () => <div>Loading..</div>
 
 const NotFound = () => <div>Not found.</div>
 
-const App = () => {
+const App = (props) => {
+  const { t } = props;
   const dataStore = useContext(DataStoreContext);
   const { authenticationStore } = dataStore;
   const { isAuthenticated } = authenticationStore;
@@ -23,6 +25,7 @@ const App = () => {
   return (
     <div className="h-100">
       <Header />
+      <span>Current lang: {t('currentLanguage')}</span>
       <Suspense fallback={<LoadingScreen />}>
         <Switch>
           {isAuthenticated ? renderPrivateRoutes() : renderPublicRoutes()}
@@ -38,5 +41,5 @@ const App = () => {
   );
 }
 
-export default App;
+export default withTranslation()(App);
 
