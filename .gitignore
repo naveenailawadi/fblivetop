@@ -24,3 +24,6 @@ yarn-error.log*
 
 # sqllite database
 *.db
+
+# account information (in txt files)
+*.txt

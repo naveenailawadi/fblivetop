@@ -5,7 +5,7 @@ from api import bcrypt
 
 
 # create a resource for user addition
-class UserResource(Resource):
+class UserManagementResource(Resource):
     # create users
     def post(self):
         json_data = load_json()
@@ -36,3 +36,49 @@ class UserResource(Resource):
         db.session.commit()
 
         return {'status': 'success'}, 201
+
+    # change user attributes (just the password for now)
+
+    def put(self):
+        json_data = load_json()
+
+        # get relevant data
+        try:
+            email = json_data['email']
+            old_password = json_data['old_password']
+            new_password = json_data['new_password']
+        except KeyError:
+            return {'message', 'email, old_password, and new_password are required'}, 422
+
+        validated, user, code = User.validate(email, old_password)
+
+        if not validated:
+            return user, code
+
+        # change the password
+        user.password = bcrypt.generate_password_hash(new_password).decode('utf-8')
+        db.session.commit()
+
+        return {'status': 'success'}, 201
+
+    # create a function that deletes users (should be available to everyone)
+
+    def delete(self):
+        json_data = load_json()
+
+        # get the data
+        try:
+            email = json_data['email']
+            password = json_data['password']
+        except KeyError:
+            return {'message': 'email and password are required'}, 422
+
+        validated, user, code = User.validate(email, password)
+
+        if not validated:
+            return user, code
+
+        # delete the user
+
+
+# create a class for admins to get all the user data
