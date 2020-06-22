@@ -2,7 +2,10 @@ import { lazy } from 'react';
 
 export default {
   root: {
-    url: '/'
+    url: '/',
+    title: 'Streaming Form',
+    component: lazy(() => import('../pages/StreamingForm')),
+    protected: true,
   },
   signIn: {
     url: '/sign-in',

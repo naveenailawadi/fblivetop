@@ -1,12 +1,27 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { Link, withRouter } from 'react-router-dom';
 import Routes from '../constants/Routes';
+import { getCurrentRoute } from '../appUtils';
+import { DataStoreContext } from '../../core/stores/DataStore'
 
-const Header = () => {
+const Header = (props) => {
+    const { location } = props;
+    const dataStore = useContext(DataStoreContext);
+    const { authenticationStore } = dataStore;
+    const { isAuthenticated, logOut } = authenticationStore;
+
+    const currentRoute = getCurrentRoute(location.pathname)
+
+
+    const handleLogOut = () => {
+        logOut();
+        window.location.reload();
+    }
+
     return (
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container">
-                <a class="navbar-brand" href="#">Brand</a>
+                <Link class="navbar-brand" to={Routes.root.url}>FBLiveTop</Link>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample07" aria-controls="navbarsExample07" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -22,17 +37,25 @@ const Header = () => {
                         </li>
                     </ul>
                     <ul class="navbar-nav navbar-right">
-                        <li class="nav-item">
-                            <Link to={Routes.signIn.url} class="nav-link" href="#">Log In</Link>
-                        </li>
-                        <li class="nav-item">
-                            <Link to={Routes.signUp.url} class="nav-link" href="#">Register</Link>
-                        </li>
+                        {isAuthenticated ? (
+                            <li class="nav-item">
+                                <a href="#" class={`nav-link`} onClick={handleLogOut}>Log Out</a>
+                            </li>
+                        ) : (
+                                <>
+                                    <li class="nav-item">
+                                        <Link to={Routes.signIn.url} class={`nav-link ${currentRoute === Routes.signIn ? 'active' : ''}`}>Log In</Link>
+                                    </li>
+                                    <li class="nav-item">
+                                        <Link to={Routes.signUp.url} class={`nav-link ${currentRoute === Routes.signUp ? 'active' : ''}`}>Register</Link>
+                                    </li>
+                                </>
+                            )}
                     </ul>
                 </div>
             </div>
-        </nav>
+        </nav >
     );
 }
 
-export default Header;
+export default withRouter(Header);

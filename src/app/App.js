@@ -1,4 +1,5 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useContext } from 'react';
+import { DataStoreContext } from '../core/stores/DataStore'
 import Header from './components/Header';
 import {
   Switch,
@@ -15,8 +16,9 @@ const LoadingScreen = () => <div>Loading..</div>
 const NotFound = () => <div>Not found.</div>
 
 const App = () => {
-  // FIXME: GET REAL AUTHENTICATION
-  const isAuthenticated = false;
+  const dataStore = useContext(DataStoreContext);
+  const { authenticationStore } = dataStore;
+  const { isAuthenticated } = authenticationStore;
 
   return (
     <div className="h-100">

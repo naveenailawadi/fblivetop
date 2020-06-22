@@ -1,6 +1,6 @@
 import React from 'react';
 import Routes from "./constants/Routes";
-import { Route } from 'react-router-dom';
+import { Route, matchPath } from 'react-router-dom';
 
 export const renderRoutes = routes => {
     return routes.map(route => {
@@ -29,3 +29,8 @@ export const renderPrivateRoutes = () => {
     );
     return renderRoutes(routes);
 };
+
+export const getCurrentRoute = pathname =>
+    Object.values(Routes).find(route =>
+        matchPath(pathname, { exact: true, path: route.url })
+    ) || Routes.home;
