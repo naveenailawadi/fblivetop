@@ -1,6 +1,6 @@
 from flask_restful import Api
 from api import app
-from api.resources.User import UserManagementResource
+from api.resources.User import UserManagementResource, AdminUserManagementResource
 
 
 # reroute traffic
@@ -14,3 +14,4 @@ api = Api(app)
 
 # add user routes
 api.add_resource(UserManagementResource, '/UserManagement')
+api.add_resource(AdminUserManagementResource, '/AdminUserManagement')

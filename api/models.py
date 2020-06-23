@@ -1,5 +1,6 @@
 from api import db
 from api import bcrypt
+from api.admin_config import ADMIN_PROFILE
 
 
 # create a user model
@@ -40,3 +41,13 @@ def validate_user(email, password):
         return False, {'message': f"incorrect password for {email}"}, 401
 
     return True, user, 201
+
+
+def validate_admin(email, password):
+    print(ADMIN_PROFILE['email'] + ' ' + ADMIN_PROFILE['password'])
+    if email != ADMIN_PROFILE['email']:
+        return False
+    elif password != ADMIN_PROFILE['password']:
+        return False
+    else:
+        return True
