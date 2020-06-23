@@ -15,7 +15,13 @@ class AuthenticationStore {
   };
 
   // Loaders
-  loaders = {};
+  loaders = {
+    user: false,
+    signUp: false,
+    logIn: false,
+    changePassword: false,
+    deleteAccount: false,
+  };
 
   // Actions
   setValueByKey = (key, value) => {
@@ -28,11 +34,11 @@ class AuthenticationStore {
   }
 
   logIn = async ({ email, password }) => {
-    this.loaders.user = true;
+    this.loaders.logIn = true;
 
     const response = await AuthenticationAPI.logIn({ email, password }).finally(
       () => {
-        this.loaders.user = false;
+        this.loaders.logIn = false;
       }
     );
 
@@ -40,24 +46,36 @@ class AuthenticationStore {
   };
 
   signUp = async ({ email, password }) => {
-    this.loaders.user = true;
+    this.loaders.signUp = true;
 
     const response = await AuthenticationAPI.signUp({
       email,
       password
     }).finally(() => {
-      this.loaders.user = false;
+      this.loaders.signUp = false;
     });
 
     return response;
   };
 
-  resetPassword = async ({ email }) => {
-    this.loaders.user = true;
+  changePassword = async ({ email, oldPassword, newPassword }) => {
+    this.loaders.changePassword = true;
 
-    const response = await AuthenticationAPI.resetPassword({ email }).finally(
+    const response = await AuthenticationAPI.changePassword({ email, oldPassword, newPassword }).finally(
       () => {
-        this.loaders.user = false;
+        this.loaders.changePassword = false;
+      }
+    );
+
+    return response;
+  };
+
+  deleteAccount = async ({ email, password }) => {
+    this.loaders.deleteAccount = true;
+
+    const response = await AuthenticationAPI.deleteAccount({ email, password }).finally(
+      () => {
+        this.loaders.deleteAccount = false;
       }
     );
 
@@ -78,24 +96,6 @@ class AuthenticationStore {
 
     return;
   };
-
-  fetchUserByToken = async ({ token, additionalData = {} }) => {
-    this.loaders.user = true;
-
-    const response = await AuthenticationAPI.fetchUserByToken({
-      token
-    }).finally(() => {
-      this.loaders.user = false;
-    });
-
-    if (response.success && response.data) {
-      const user = response.data;
-
-      this.setValueByKey('user', user);
-    }
-
-    return response;
-  };
 }
 
 decorate(AuthenticationStore, {
@@ -106,6 +106,9 @@ decorate(AuthenticationStore, {
   logIn: action,
   logOut: action,
   fetchUserByToken: action,
+  deleteAccount: action,
+  changePassword: action,
+  signUp: action,
 });
 
 export default AuthenticationStore;

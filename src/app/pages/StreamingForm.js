@@ -18,15 +18,15 @@ const StreamingForm = () => {
                 <div className="card-body">
                     <div>
                         <div className="form-group">
-                            <label for="streamingFormMinutes">Number of minutes</label>
+                            <label htmlFor="streamingFormMinutes">Number of minutes</label>
                             <input value={minutes} onChange={evt => setMinutes(evt.target.value)} min={1} type="number" className="form-control" id="streamingFormMinutes" />
                         </div>
                         <div className="form-group">
-                            <label for="streamingFormAccounts">Number of Facebook accounts</label>
+                            <label htmlFor="streamingFormAccounts">Number of Facebook accounts</label>
                             <input value={fbAccounts} onChange={evt => setFbAccounts(evt.target.value)} min={1} type="number" className="form-control" id="streamingFormAccounts" />
                         </div>
                         <div className="form-group">
-                            <label for="streamingFormStreamUrl">Link to stream</label>
+                            <label htmlFor="streamingFormStreamUrl">Link to stream</label>
                             <input value={streamUrl} onChange={evt => setStreamUrl(evt.target.value)} className="form-control" id="streamingFormStreamUrl" />
                         </div>
                         <button className="btn btn-lg btn-primary btn-block" onClick={handleSubmitForm}>Submit</button>

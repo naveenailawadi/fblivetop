@@ -14,7 +14,7 @@ export const logIn = async ({ email, password }) => {
 
 export const signUp = async ({ email, password }) => {
   try {
-    const res = await client().get('/');
+    const res = await client().post('/UserManagement', { email, password, confirmed_password: password });
     return processResponse(res);
   } catch (err) {
     console.error(err);
@@ -22,9 +22,9 @@ export const signUp = async ({ email, password }) => {
   }
 };
 
-export const resetPassword = async ({ email }) => {
+export const deleteAccount = async ({ email, password }) => {
   try {
-    const res = await client().get('/');
+    const res = await client().delete('/UserManagement', { data: { email, password } });
     return processResponse(res);
   } catch (err) {
     console.error(err);
@@ -32,11 +32,9 @@ export const resetPassword = async ({ email }) => {
   }
 };
 
-export const fetchUserByToken = async ({ token }) => {
+export const changePassword = async ({ email, oldPassword, newPassword }) => {
   try {
-    let query = `/me?at=${token}`;
-
-    const res = await client().get(query);
+    const res = await client().put('/UserManagement', { email, old_password: oldPassword, new_password: newPassword });
     return processResponse(res);
   } catch (err) {
     console.error(err);

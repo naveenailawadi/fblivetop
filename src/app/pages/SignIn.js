@@ -1,9 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Routes from '../constants/Routes';
 import { Link } from 'react-router-dom';
+import { handlePressEnter, isValidEmail } from '../AppHelper';
 
 const SignIn = () => {
-    const handleSubmit = () => { }
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    const handleSubmit = () => {
+        if (!email || !password) return alert('One or more required fields are missing.');
+        if (!isValidEmail(email)) return alert('Email is not valid.');
+
+        // TODO: HANDLE LOG IN
+    }
 
     return (
         <div className="container-sm" style={{ maxWidth: '760px' }}>
@@ -14,16 +23,30 @@ const SignIn = () => {
                 <div className="card-body">
                     <div>
                         <div className="form-group">
-                            <label for="signInUsername">Username</label>
-                            <input className="form-control" id="signInUsername" />
+                            <label htmlFor="signInUsername">Email</label>
+                            <input value={email}
+                                className="form-control"
+                                id="signInEmail"
+                                onChange={evt => setEmail(evt.target.value)}
+                                onKeyPress={evt =>
+                                    handlePressEnter(evt, handleSubmit)
+                                } />
                         </div>
                         <div className="form-group">
-                            <label for="signInPassword">Password</label>
-                            <input type="password" className="form-control" id="signInPassword" />
+                            <label htmlFor="signInPassword">Password</label>
+                            <input
+                                type="password"
+                                className="form-control"
+                                id="signInPassword"
+                                value={password}
+                                onChange={evt => setPassword(evt.target.value)}
+                                onKeyPress={evt =>
+                                    handlePressEnter(evt, handleSubmit)
+                                } />
                         </div>
                         <div className="form-group form-check">
                             <input type="checkbox" className="form-check-input" id="signInRememebr" />
-                            <label className="form-check-label" for="signInRememebr">Remember me</label>
+                            <label className="form-check-label" htmlFor="signInRememebr">Remember me</label>
                         </div>
                         <button className="btn btn-lg btn-primary btn-block" onClick={handleSubmit}>Submit</button>
                         <div className="d-flex justify-content-between mt-2">

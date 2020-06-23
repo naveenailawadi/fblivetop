@@ -8,9 +8,10 @@ import {
   matchPath,
   Redirect
 } from 'react-router-dom';
-import { renderPrivateRoutes, renderPublicRoutes } from './appUtils';
+import { renderPrivateRoutes, renderPublicRoutes } from './AppUtils';
 import Routes from './constants/Routes';
 import { withTranslation } from 'react-i18next';
+import { observer } from 'mobx-react-lite';
 
 const LoadingScreen = () => <div>Loading..</div>
 
@@ -25,7 +26,6 @@ const App = (props) => {
   return (
     <div className="h-100">
       <Header />
-      <span>Current lang: {t('currentLanguage')}</span>
       <Suspense fallback={<LoadingScreen />}>
         <Switch>
           {isAuthenticated ? renderPrivateRoutes() : renderPublicRoutes()}
@@ -41,5 +41,5 @@ const App = (props) => {
   );
 }
 
-export default withTranslation()(App);
+export default withTranslation()(observer(App));
 
