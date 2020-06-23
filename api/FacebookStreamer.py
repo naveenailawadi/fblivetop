@@ -44,9 +44,9 @@ class Streamer:
         password_box.send_keys(Keys.ENTER)
         time.sleep(SLEEP_INCREMENT * 2)
 
-    def stream(self, streaming_link):
+    def stream(self, streaming_link, timeout):
         # go to the link
-        self.driver.get('https://www.facebook.com/StoneMountain64/videos/636677343609316')
+        self.driver.get(streaming_link)
         time.sleep(SLEEP_INCREMENT * 4)
 
         # handle for new and old facebook sites
@@ -55,6 +55,20 @@ class Streamer:
         except NoSuchElementException:
             play_button = self.driver.find_element_by_xpath('//i[@id="u_1_0"]')
         play_button.click()
+
+        # stop streaming on timeout
+        start = time.time()
+        end = time.time()
+
+        while True:
+            time.sleep(10)
+            end = time.time()
+
+            if (end - start) > timeout:
+                break
+
+        # close the streamer
+        self.close()
 
     def close(self):
         self.driver.close()
