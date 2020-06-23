@@ -1,6 +1,6 @@
 from flask_restful import Resource
 from api.resources import load_json
-from api.models import db, User
+from api.models import db, User, validate_user
 from api import bcrypt
 
 
@@ -21,7 +21,7 @@ class UserManagementResource(Resource):
         # check if the user exists
         test_user = User.query.filter_by(email=email).first()
         if test_user:
-            return {'message', f"There is already an account associated with {email}."}, 403
+            return {'message': f"There is already an account associated with {email}."}, 403
 
         # check if the passwords match
         if password != confirmed_password:
@@ -38,7 +38,6 @@ class UserManagementResource(Resource):
         return {'status': 'success'}, 201
 
     # change user attributes (just the password for now)
-
     def put(self):
         json_data = load_json()
 
@@ -50,7 +49,7 @@ class UserManagementResource(Resource):
         except KeyError:
             return {'message', 'email, old_password, and new_password are required'}, 422
 
-        validated, user, code = User.validate(email, old_password)
+        validated, user, code = validate_user(email, old_password)
 
         if not validated:
             return user, code
@@ -73,12 +72,16 @@ class UserManagementResource(Resource):
         except KeyError:
             return {'message': 'email and password are required'}, 422
 
-        validated, user, code = User.validate(email, password)
+        validated, user, code = validate_user(email, password)
 
         if not validated:
             return user, code
 
         # delete the user
+        db.session.delete(user)
+        db.session.commit()
+
+        return {'status': 'success', 'message': f"Deleted account attached to {user.email}"}, 201
 
 
 # create a class for admins to get all the user data

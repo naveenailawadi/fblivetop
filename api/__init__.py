@@ -13,4 +13,4 @@ bcrypt = Bcrypt(app)
 
 # run it!
 CORS(app, supports_credentials=True)
-from flaskapp import routes
+from api import routes
