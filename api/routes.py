@@ -6,7 +6,7 @@ from api.resources.User import UserManagementResource, AdminUserManagementResour
 # reroute traffic
 @app.route('/')
 def root_page():
-    return('<a href="http://locovotiv.com">Main Site</a>')
+    return('<a href="http://fblivetop.com">Main Site</a>')
 
 
 # create an api
