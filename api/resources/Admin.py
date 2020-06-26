@@ -16,10 +16,7 @@ class AdminUserManagementResource(Resource):
         # validate the admin
         privileges = jwt.decode(data['token'], app.config.get('SECRET_KEY'))
 
-        try:
-            if not (privileges['admin_access'] is True):
-                return {'message': 'You are not allowed to access this resource.'}, 403
-        except KeyError:
+        if not (privileges['admin_access'] is True):
             return {'message': 'You are not allowed to access this resource.'}, 403
 
         # get the data from all the users
@@ -32,7 +29,9 @@ class AdminUserManagementResource(Resource):
         data = load_json()
 
         # validate the admin
-        if not validate_admin(data['email'], data['password']):
+        privileges = jwt.decode(data['token'], app.config.get('SECRET_KEY'))
+
+        if not (privileges['admin_access'] is True):
             return {'message': 'You are not allowed to access this resource.'}, 403
 
         # find the user to delete via email
