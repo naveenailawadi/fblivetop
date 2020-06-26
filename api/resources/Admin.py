@@ -1,5 +1,5 @@
 from flask_restful import Resource
-from api.resources import load_json
+from api.resources import load_json, TOKEN_MINUTES
 from api.models import db, User, validate_admin
 from api import bcrypt, app
 from datetime import datetime as dt, timedelta
@@ -43,3 +43,18 @@ class AdminUserManagementResource(Resource):
         db.session.commit()
 
         return {'status': 'success', 'message': f"Deleted {user_email}"}, 201
+
+
+# create a class to log in admins
+class AdminLoginResource(Resource):
+    def post(self):
+        data = load_json()
+
+        # validate the admin
+        if not validate_admin(data['email'], data['password']):
+            return {'message': 'You are not allowed to access this resource.'}, 403
+
+        # get a token and give it to the admin
+        token = jwt.encode({'admin_access': True, 'exp': dt.utcnow() + timedelta(minutes=TOKEN_MINUTES)}, app.config['SECRET_KEY']).decode('UTF-8')
+
+        return {'status': 'success', 'token': token}
