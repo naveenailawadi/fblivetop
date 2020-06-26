@@ -42,6 +42,10 @@ class AuthenticationStore {
       }
     );
 
+    if (response.success && response.data) {
+      // TODO: SAVE ACCESS TOKEN IN LOCAL STORAGE
+    }
+
     return response;
   };
 

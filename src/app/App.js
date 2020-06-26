@@ -31,7 +31,7 @@ const App = (props) => {
           {isAuthenticated ? renderPrivateRoutes() : renderPublicRoutes()}
           <Route
             exact
-            path={Routes.root.url}
+            path={Routes.home.url}
             render={() => <Redirect to={Routes.signIn.url} />}
           />
           <Route component={NotFound} />

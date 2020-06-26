@@ -8,14 +8,16 @@ const AdminPanel = () => {
     const [emailFilter, setEmailFilter] = useState('')
     const [usernameFilter, setUsernameFilter] = useState('')
 
-    const [usersList, setUsersList] = useState(null);
+    const [usersList, setUsersList] = useState([{ email: 'john@doe.co' }, { email: "test@test.co" }, { email: "a@a.co" }]);
 
     const loadingUsersList = adminStore.loaders.getAllUsers;
+
+    const filteredUsersList = emailFilter ? usersList && usersList.filter(i => i.email.includes(emailFilter)) : usersList;
 
     useEffect(() => {
         const { user } = authenticationStore.data;
         if (!user) return;
-        
+
         adminStore.getAllUsers({ email: user.email, password: user.password }).then(response => {
             if (response.success && response.data) {
                 setUsersList(response.data);
@@ -24,7 +26,7 @@ const AdminPanel = () => {
     }, [adminStore, authenticationStore.data]);
 
     const renderUsersList = () => {
-        return usersList ? usersList.map(u => <UsersListItem key={u.email} email={u.email} username={u.username} />) : <p>No users found.</p>
+        return usersList ? usersList.map(u => <UsersListItem key={u.email} email={u.email} />) : <p>No users found.</p>
     }
 
     return (
@@ -54,7 +56,7 @@ const AdminPanel = () => {
             </div> */}
                     </div>
                 </div>
-                <div className="form-group">
+                {/* <div className="form-group">
                     <label className="font-weight-bold text-dark">Filter by username:</label>
                     <div className="input-group">
                         <input
@@ -63,7 +65,7 @@ const AdminPanel = () => {
                             onChange={evt => setUsernameFilter(evt.target.value)}
                             value={usernameFilter}
                         />
-                        {/* <div className="input-group-append">
+                        <div className="input-group-append">
               <button
                 className="btn btn-dark btn-sm"
                 type="button"
@@ -72,11 +74,26 @@ const AdminPanel = () => {
               >
                 <i className="fa fa-search" />
               </button>
-            </div> */}
+            </div>
                     </div>
-                </div>
-                {renderUsersList()}
-                {loadingUsersList && (
+                </div> */}
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            {/* <th scope="col">#</th> */}
+                            <th scope="col">Email</th>
+                            {/* <th scope="col">Edit</th> */}
+                            <th scope="col">Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-bordered">
+                        {filteredUsersList && filteredUsersList.map(u => <tr key={u.email}>
+                            <td>{u.email}</td>
+                            {/* <td><button class="btn btn-info"><i class="fa fa-edit"></i></button></td> */}
+                            <td><button class="btn btn-danger"><i class="fa fa-trash"></i></button></td>
+                        </tr>)}
+                    </tbody>
+                </table>                {loadingUsersList && (
                     <div className="card mb-3">
                         <div className="card-body text-center p-2 ">
                             <div class="spinner-border" role="status">

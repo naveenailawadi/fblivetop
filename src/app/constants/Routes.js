@@ -1,7 +1,7 @@
 import { lazy } from 'react';
 
 export default {
-  root: {
+  home: {
     url: '/',
     title: 'Streaming Form',
     component: lazy(() => import('../pages/StreamingForm')),
