@@ -1,7 +1,7 @@
 from flask_restful import Resource
 from api.resources import load_json, TOKEN_MINUTES
 from api.models import db, User, validate_admin
-from api import bcrypt, app
+from api import app
 from datetime import datetime as dt, timedelta
 import jwt
 
@@ -14,7 +14,9 @@ class AdminUserManagementResource(Resource):
         data = load_json()
 
         # validate the admin
-        if not validate_admin(data['email'], data['password']):
+        privileges = jwt.decode(data['token'], app.config.get('SECRET_KEY'))
+
+        if not (privileges['admin_access'] is True):
             return {'message': 'You are not allowed to access this resource.'}, 403
 
         # get the data from all the users
