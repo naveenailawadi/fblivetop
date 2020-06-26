@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { observable, decorate, action, computed } from 'mobx';
 import * as AdminAPI from '../api/AdminAPI';
 
-class AuthenticationStore {
+class AdminStore {
     dataStore;
 
     constructor(dataStoreRef) {
@@ -15,7 +15,10 @@ class AuthenticationStore {
     };
 
     // Loaders
-    loaders = {};
+    loaders = {
+        getAllUsers: false,
+        deleteUser: false,
+    };
 
     // Actions
     setValueByKey = (key, value) => {
@@ -54,13 +57,12 @@ class AuthenticationStore {
     };
 }
 
-decorate(AuthenticationStore, {
+decorate(AdminStore, {
     data: observable,
     loaders: observable,
     setValueByKey: action,
-    isAuthenticated: computed,
     getAllUsers: action,
     deleteUser: action,
 });
 
-export default AuthenticationStore;
+export default AdminStore;

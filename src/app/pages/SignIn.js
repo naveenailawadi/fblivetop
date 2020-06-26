@@ -1,17 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import Routes from '../constants/Routes';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import { handlePressEnter, isValidEmail } from '../AppHelper';
+import { DataStoreContext } from '../../core/stores/DataStore';
+import { observer } from 'mobx-react-lite';
+import Swal from 'sweetalert2';
 
-const SignIn = () => {
+const SignIn = (props) => {
+    const dataStore = useContext(DataStoreContext);
+    const { authenticationStore } = dataStore;
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+    const loadingLogIn = authenticationStore.loaders.logIn;
 
     const handleSubmit = () => {
         if (!email || !password) return alert('One or more required fields are missing.');
         if (!isValidEmail(email)) return alert('Email is not valid.');
 
         // TODO: HANDLE LOG IN
+        authenticationStore.logIn({ email, password }).then(response => {
+            if (response.error) {
+                return alert('There was an error logging in. Please try again later.')
+            }
+
+            props.history.push(Routes.home.url);
+
+            Swal.fire({
+                type: 'success',
+                title: `Welcome back!`,
+                text: 'Logged in successfully.',
+                icon: 'success',
+                showConfirmButton: false,
+                timer: 1500,
+            });
+        })
     }
 
     return (
@@ -25,6 +49,7 @@ const SignIn = () => {
                         <div className="form-group">
                             <label htmlFor="signInUsername">Email</label>
                             <input value={email}
+                                type="email"
                                 className="form-control"
                                 id="signInEmail"
                                 onChange={evt => setEmail(evt.target.value)}
@@ -48,7 +73,7 @@ const SignIn = () => {
                             <input type="checkbox" className="form-check-input" id="signInRememebr" />
                             <label className="form-check-label" htmlFor="signInRememebr">Remember me</label>
                         </div>
-                        <button className="btn btn-lg btn-primary btn-block" onClick={handleSubmit}>Submit</button>
+                        <button className="btn btn-lg btn-primary btn-block" onClick={handleSubmit} disabled={loadingLogIn}>Submit</button>
                         <div className="d-flex justify-content-between mt-2">
                             <span>Don't have an account? <Link to={Routes.signUp.url}>Register</Link></span>
                             {/* <a href="#">Forgot Password?</a> */}
@@ -60,4 +85,4 @@ const SignIn = () => {
     );
 }
 
-export default SignIn;
+export default withRouter(observer(SignIn));

@@ -3,7 +3,7 @@ import constants from '../constants';
 
 export const logIn = async ({ email, password }) => {
   try {
-    const res = await client().get('/');
+    const res = await client().post('/Login', { email, password });
     return processResponse(res);
   } catch (err) {
     console.error(err);

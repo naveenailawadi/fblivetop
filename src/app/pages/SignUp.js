@@ -54,13 +54,13 @@ const SignUp = () => {
             <div className="card">
                 <div className="card-body">
                     <div>
-                        <div className="form-group">
+                        {/* <div className="form-group">
                             <label htmlFor="signUpUsername">Username</label>
                             <input value={username} onChange={evt => setUsername(evt.target.value)} className="form-control" id="signUpUsername"
                                 onKeyPress={evt =>
                                     handlePressEnter(evt, handleSubmit)
                                 } />
-                        </div>
+                        </div> */}
                         <div className="form-group">
                             <label htmlFor="signUpEmail">Email</label>
                             <input value={email} onChange={evt => setEmail(evt.target.value)} className="form-control" id="signUpEmail"

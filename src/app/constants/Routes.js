@@ -1,7 +1,7 @@
 import { lazy } from 'react';
 
 export default {
-  root: {
+  home: {
     url: '/',
     title: 'Streaming Form',
     component: lazy(() => import('../pages/StreamingForm')),
@@ -16,5 +16,10 @@ export default {
     url: '/register',
     title: 'Register',
     component: lazy(() => import('../pages/SignUp'))
+  },
+  adminPanel: {
+    url: '/admin',
+    title: 'Admin Panel',
+    component: lazy(() => import('../pages/AdminPanel'))
   },
 };
