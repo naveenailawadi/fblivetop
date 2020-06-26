@@ -17,4 +17,9 @@ export default {
     title: 'Register',
     component: lazy(() => import('../pages/SignUp'))
   },
+  adminPanel: {
+    url: '/admin',
+    title: 'Admin Panel',
+    component: lazy(() => import('../pages/AdminPanel'))
+  },
 };
