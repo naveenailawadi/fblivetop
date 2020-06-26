@@ -139,7 +139,7 @@ class LoginResource(Resource):
         validated, user, code = validate_user(email, password)
 
         if validated:
-            output = {'status': 'success'}
+            output = {'status': 'success', 'loggedIn': True}
         else:
             output = user
 
