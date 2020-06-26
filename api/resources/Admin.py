@@ -16,7 +16,10 @@ class AdminUserManagementResource(Resource):
         # validate the admin
         privileges = jwt.decode(data['token'], app.config.get('SECRET_KEY'))
 
-        if not (privileges['admin_access'] is True):
+        try:
+            if not (privileges['admin_access'] is True):
+                return {'message': 'You are not allowed to access this resource.'}, 403
+        except KeyError:
             return {'message': 'You are not allowed to access this resource.'}, 403
 
         # get the data from all the users
