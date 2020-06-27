@@ -1,30 +1,40 @@
 import React, { useState, useEffect, useContext } from 'react';
 import UsersListItem from '../components/UsersListItem';
 import { DataStoreContext } from '../../core/stores/DataStore';
+import { withRouter } from 'react-router-dom';
+import { observer } from 'mobx-react-lite';
+import Routes from '../constants/Routes';
 
-const AdminPanel = () => {
+const AdminPanel = (props) => {
     const dataStore = useContext(DataStoreContext);
     const { adminStore, authenticationStore } = dataStore;
     const [emailFilter, setEmailFilter] = useState('')
 
     const [usersList, setUsersList] = useState(null);
+    const [initialized, setInitialized] = useState(false);
 
     const loadingUsersList = adminStore.loaders.getAllUsers;
 
     const filteredUsersList = emailFilter ? usersList && usersList.filter(i => i.email.includes(emailFilter)) : usersList;
 
     useEffect(() => {
+        // TODO: FETCH USERS LIST ON INIT. IF RESPONSE IS ERROR, MEANS THAT USER IS NOT ADMIN. REDIRECT TO ROOT.
         const { user } = authenticationStore.data;
-        if (!user) return;
+        if (!user) return props.history.push(Routes.home.url);
 
-        adminStore.getAllUsers({ email: user.email, password: user.password }).then(response => {
-            console.log(response.data);
+        adminStore.getAllUsers({ email: user.email, password: user.password, token: user.token }).then(response => {
             if (response.success && response.data) {
                 setUsersList(response.data);
+                setInitialized(true);
+            } else {
+                // Case user is not admin
+                return props.history.push(Routes.home.url);
             }
         })
-    }, [adminStore, authenticationStore.data]);
+    }, [adminStore, authenticationStore.data, props.history]);
 
+    // TODO: LOADING SCREEN
+    if (!initialized) return <div>Loading...</div>
 
     return (
         <div className="container-sm" style={{ maxWidth: '760px' }}>
@@ -107,4 +117,4 @@ const AdminPanel = () => {
     );
 }
 
-export default AdminPanel;
+export default withRouter(observer(AdminPanel));
