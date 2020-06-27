@@ -20,6 +20,8 @@ export default {
   adminPanel: {
     url: '/admin',
     title: 'Admin Panel',
+    protected: true,
+    admin: true,
     component: lazy(() => import('../pages/AdminPanel'))
   },
 };

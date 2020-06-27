@@ -17,7 +17,7 @@ const Header = (props) => {
 
     const handleLogOut = () => {
         logOut();
-        window.location.reload();
+        window.location.href = "/";
     }
 
     const handleLanguageChange = key => {

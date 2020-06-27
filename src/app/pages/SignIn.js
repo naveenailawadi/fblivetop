@@ -12,6 +12,7 @@ const SignIn = (props) => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [remember, setRemember] = useState(true);
 
     const loadingLogIn = authenticationStore.loaders.logIn;
 
@@ -19,8 +20,7 @@ const SignIn = (props) => {
         if (!email || !password) return alert('One or more required fields are missing.');
         if (!isValidEmail(email)) return alert('Email is not valid.');
 
-        // TODO: HANDLE LOG IN
-        authenticationStore.logIn({ email, password }).then(response => {
+        authenticationStore.logIn({ email, password, remember }).then(response => {
             if (response.error) {
                 return alert('There was an error logging in. Please try again later.')
             }
@@ -70,7 +70,7 @@ const SignIn = (props) => {
                                 } />
                         </div>
                         <div className="form-group form-check">
-                            <input type="checkbox" className="form-check-input" id="signInRememebr" />
+                            <input type="checkbox" className="form-check-input" id="signInRememebr" value={remember} onChange={() => setRemember(!remember)} />
                             <label className="form-check-label" htmlFor="signInRememebr">Remember me</label>
                         </div>
                         <button className="btn btn-lg btn-primary btn-block" onClick={handleSubmit} disabled={loadingLogIn}>Submit</button>

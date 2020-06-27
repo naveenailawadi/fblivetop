@@ -6,9 +6,8 @@ const AdminPanel = () => {
     const dataStore = useContext(DataStoreContext);
     const { adminStore, authenticationStore } = dataStore;
     const [emailFilter, setEmailFilter] = useState('')
-    const [usernameFilter, setUsernameFilter] = useState('')
 
-    const [usersList, setUsersList] = useState([{ email: 'john@doe.co' }, { email: "test@test.co" }, { email: "a@a.co" }]);
+    const [usersList, setUsersList] = useState(null);
 
     const loadingUsersList = adminStore.loaders.getAllUsers;
 
@@ -19,15 +18,13 @@ const AdminPanel = () => {
         if (!user) return;
 
         adminStore.getAllUsers({ email: user.email, password: user.password }).then(response => {
+            console.log(response.data);
             if (response.success && response.data) {
                 setUsersList(response.data);
             }
         })
     }, [adminStore, authenticationStore.data]);
 
-    const renderUsersList = () => {
-        return usersList ? usersList.map(u => <UsersListItem key={u.email} email={u.email} />) : <p>No users found.</p>
-    }
 
     return (
         <div className="container-sm" style={{ maxWidth: '760px' }}>
@@ -77,7 +74,8 @@ const AdminPanel = () => {
             </div>
                     </div>
                 </div> */}
-                <table class="table table-striped">
+
+                <table className="table table-striped">
                     <thead>
                         <tr>
                             {/* <th scope="col">#</th> */}
@@ -86,18 +84,20 @@ const AdminPanel = () => {
                             <th scope="col">Delete</th>
                         </tr>
                     </thead>
-                    <tbody class="table-bordered">
+                    <tbody className="table-bordered">
                         {filteredUsersList && filteredUsersList.map(u => <tr key={u.email}>
                             <td>{u.email}</td>
-                            {/* <td><button class="btn btn-info"><i class="fa fa-edit"></i></button></td> */}
-                            <td><button class="btn btn-danger"><i class="fa fa-trash"></i></button></td>
+                            {/* <td><button className="btn btn-info"><i className="fa fa-edit"></i></button></td> */}
+                            <td><button className="btn btn-danger"><i className="fa fa-trash"></i></button></td>
                         </tr>)}
                     </tbody>
-                </table>                {loadingUsersList && (
+                </table>
+                {!filteredUsersList || filteredUsersList.length === 0 ? <p>No users found.</p> : null}
+                {loadingUsersList && (
                     <div className="card mb-3">
                         <div className="card-body text-center p-2 ">
-                            <div class="spinner-border" role="status">
-                                <span class="sr-only">Loading...</span>
+                            <div className="spinner-border" role="status">
+                                <span className="sr-only">Loading...</span>
                             </div>
                         </div>
                     </div>

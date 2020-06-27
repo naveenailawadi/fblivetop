@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import _ from 'lodash';
+import React, { useState, useEffect } from 'react';
+import validator from 'validator';
 
 const StreamingForm = () => {
     const [minutes, setMinutes] = useState(1);
@@ -7,7 +9,26 @@ const StreamingForm = () => {
 
     const handleSubmitForm = () => {
         // TODO: VALIDATE STREAM URL
+        if (minutes < 1 || !_.isInteger(minutes)) return alert('Minutes should be an integer larger than 0.');
+        if (fbAccounts < 1 || !_.isInteger(fbAccounts)) return alert('Facebook accounts should be an integer larger than 0.')
+
+        if (!validator.isURL(streamUrl)) return alert('Stream url should be a valid URL.');
+
+
     }
+
+
+    useEffect(() => {
+        if (!_.isInteger(minutes))
+            setMinutes(Math.floor(minutes))
+        if (minutes < 1) setMinutes(1);
+    }, [minutes])
+
+    useEffect(() => {
+        if (!_.isInteger(fbAccounts))
+            setMinutes(Math.floor(fbAccounts))
+        if (fbAccounts < 1) setFbAccounts(1);
+    }, [fbAccounts])
 
     return (
         <div className="container-sm" style={{ maxWidth: '760px' }}>
@@ -19,11 +40,11 @@ const StreamingForm = () => {
                     <div>
                         <div className="form-group">
                             <label htmlFor="streamingFormMinutes">Number of minutes</label>
-                            <input value={minutes} onChange={evt => setMinutes(evt.target.value)} min={1} type="number" className="form-control" id="streamingFormMinutes" />
+                            <input value={minutes} pattern="\d*" step="1" onChange={evt => setMinutes(evt.target.value)} min={1} type="number" className="form-control" id="streamingFormMinutes" />
                         </div>
                         <div className="form-group">
                             <label htmlFor="streamingFormAccounts">Number of Facebook accounts</label>
-                            <input value={fbAccounts} onChange={evt => setFbAccounts(evt.target.value)} min={1} type="number" className="form-control" id="streamingFormAccounts" />
+                            <input value={fbAccounts} pattern="\d*" step="1" onChange={evt => setFbAccounts(evt.target.value)} min={1} type="number" className="form-control" id="streamingFormAccounts" />
                         </div>
                         <div className="form-group">
                             <label htmlFor="streamingFormStreamUrl">Link to stream</label>

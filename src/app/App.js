@@ -1,4 +1,4 @@
-import React, { Suspense, useContext } from 'react';
+import React, { Suspense, useContext, useEffect } from 'react';
 import { DataStoreContext } from '../core/stores/DataStore'
 import Header from './components/Header';
 import {
@@ -12,6 +12,8 @@ import { renderPrivateRoutes, renderPublicRoutes } from './AppUtils';
 import Routes from './constants/Routes';
 import { withTranslation } from 'react-i18next';
 import { observer } from 'mobx-react-lite';
+import { getCookie } from './AppHelper';
+import { useState } from 'react';
 
 const LoadingScreen = () => <div>Loading..</div>
 
@@ -22,6 +24,21 @@ const App = (props) => {
   const dataStore = useContext(DataStoreContext);
   const { authenticationStore } = dataStore;
   const { isAuthenticated } = authenticationStore;
+
+  const [initialized, setInitialized] = useState(false);
+
+  useEffect(() => {
+    // Check if there is a stored user
+    const userCookie = getCookie("user");
+
+    if (userCookie) {
+      authenticationStore.setValueByKey('user', JSON.parse(userCookie));
+    }
+
+    setInitialized(true);
+  }, [authenticationStore]);
+
+  if (!initialized) return <LoadingScreen />
 
   return (
     <div className="h-100">

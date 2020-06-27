@@ -8,6 +8,7 @@
 		"@testing-library/user-event": "^7.1.2",
 		"axios": "^0.19.2",
 		"i18next": "^19.5.1",
+		"lodash": "^4.17.15",
 		"mobx": "^5.15.4",
 		"mobx-react-lite": "^2.0.7",
 		"react": "^16.13.1",
@@ -15,7 +16,8 @@
 		"react-i18next": "^11.7.0",
 		"react-router-dom": "^5.2.0",
 		"react-scripts": "3.4.1",
-		"sweetalert2": "^9.15.2"
+		"sweetalert2": "^9.15.2",
+		"validator": "^13.1.1"
 	},
 	"scripts": {
 		"start": "react-scripts start",

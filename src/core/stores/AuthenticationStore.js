@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { observable, decorate, action, computed } from 'mobx';
 import * as AuthenticationAPI from '../api/AuthenticationAPI';
+import { setCookie, eraseCookie } from '../../app/AppHelper';
 
 class AuthenticationStore {
   dataStore;
@@ -33,7 +34,7 @@ class AuthenticationStore {
     return !_.isNil(this.data.user);
   }
 
-  logIn = async ({ email, password }) => {
+  logIn = async ({ email, password, remember }) => {
     this.loaders.logIn = true;
 
     const response = await AuthenticationAPI.logIn({ email, password }).finally(
@@ -43,7 +44,27 @@ class AuthenticationStore {
     );
 
     if (response.success && response.data) {
-      // TODO: SAVE ACCESS TOKEN IN LOCAL STORAGE
+      // FIXME: Do not save password.
+      const user = {
+        email,
+        password,
+        token: response.data.token
+      }
+
+      // Case user wants to remember
+      let sessionDays = 3 / 24; // 3 Hours
+      if (remember) sessionDays = 7
+      
+       // Save access token
+      //  const accessToken = response.data.token;
+      //  localStorage._accessToken = accessToken;
+
+       // FIXME: DO NOT SAVE ALL THIS SAVE ACCESS TOKEN IN THE FUTURE.
+       const userString = JSON.stringify(user);
+       setCookie("user", userString, sessionDays);
+
+
+      this.setValueByKey('user', user);
     }
 
     return response;
@@ -89,12 +110,10 @@ class AuthenticationStore {
   logOut = async () => {
     this.loaders.user = true;
 
-    // const response = await AuthenticationAPI.logOut().finally(() => {
-    //   this.loaders.user = false;
-    // });
-
+    // Clear access token
     localStorage._accessToken = undefined;
-    this.setValueByKey('user', undefined);
+    // this.setValueByKey('user', undefined);
+    eraseCookie("user");
 
     this.loaders.user = false;
 
