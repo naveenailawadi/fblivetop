@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import Routes from '../constants/Routes';
-import { getCurrentRoute } from '../AppUtils'
+import { getCurrentRoute } from '../appUtils'
 import { DataStoreContext } from '../../core/stores/DataStore'
 import { languagesKeys, languagesNames } from '../../core/constants/enums/languagesEnum';
 

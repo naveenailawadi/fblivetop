@@ -8,7 +8,7 @@ import {
   matchPath,
   Redirect
 } from 'react-router-dom';
-import { renderPrivateRoutes, renderPublicRoutes } from './AppUtils';
+import { renderPrivateRoutes, renderPublicRoutes } from './appUtils';
 import Routes from './constants/Routes';
 import { withTranslation } from 'react-i18next';
 import { observer } from 'mobx-react-lite';
