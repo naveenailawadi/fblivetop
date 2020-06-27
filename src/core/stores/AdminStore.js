@@ -25,10 +25,10 @@ class AdminStore {
         this.data[key] = value;
     };
 
-    getAllUsers = async ({ email, password }) => {
+    getAllUsers = async ({ email, password, token }) => {
         this.loaders.getAllUsers = true;
 
-        const response = await AdminAPI.getAllUsers({ email, password }).finally(
+        const response = await AdminAPI.getAllUsers({ email, password, token }).finally(
             () => {
                 this.loaders.getAllUsers = false;
             }

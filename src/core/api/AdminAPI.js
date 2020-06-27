@@ -1,9 +1,9 @@
 import { processErrorResponse, processResponse, client } from './Client';
 import constants from '../constants';
 
-export const getAllUsers = async ({ email, password }) => {
+export const getAllUsers = async ({ email, password, token }) => {
     try {
-        const res = await client().post('/AdminUserManagement', { email, password });
+        const res = await client().post('/AdminUserManagement', { email, password, token });
         return processResponse(res);
     } catch (err) {
         console.error(err);
