@@ -1,5 +1,9 @@
 from flask import request
+from api import app
 import json
+import time
+import jwt
+from jwt.exceptions import ExpiredSignatureError
 
 # make a constant for how long until timeout
 TOKEN_MINUTES = 120
@@ -12,3 +16,24 @@ def load_json():
         json_data = request.get_json(force=True)
 
     return json_data
+
+
+def validate_admin_token(token):
+    try:
+        privileges = jwt.decode(token, app.config.get('SECRET_KEY'))
+    except ExpiredSignatureError:
+        return {'message': 'Token is expired'}, 401
+
+    try:
+        access = privileges['admin_access']
+        exp = privileges['exp']
+    except KeyError:
+        return {'message': 'invalid token', 'contains': privileges}, 401
+
+    # check the info in the token
+    if access is False:
+        return {'message': 'You are not allowed to access this resource.'}, 403
+    elif exp < time.time():
+        return {'message': 'Token is expired'}, 401
+    else:
+        return None, None

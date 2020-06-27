@@ -111,6 +111,7 @@ class LoginResource(Resource):
         else:
             user['loggedIn'] = False
             output = user
+            return output
 
         # add a token to the output
         token = jwt.encode({'id': user.id, 'exp': dt.utcnow() + timedelta(minutes=TOKEN_MINUTES)}, app.config['SECRET_KEY'])
