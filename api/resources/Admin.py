@@ -1,12 +1,13 @@
 from flask_restful import Resource
-from api.resources import load_json, TOKEN_MINUTES
+from api.resources import load_json, validate_admin_token, TOKEN_MINUTES
 from api.models import db, User, validate_admin
 from api import app
 from datetime import datetime as dt, timedelta
 import jwt
 
-
 # create a class for admins to get all the user data
+
+
 class AdminUserManagementResource(Resource):
     # create a post method to get all the users
     def post(self):
@@ -14,10 +15,9 @@ class AdminUserManagementResource(Resource):
         data = load_json()
 
         # validate the admin
-        privileges = jwt.decode(data['token'], app.config.get('SECRET_KEY'))
-
-        if not (privileges['admin_access'] is True):
-            return {'message': 'You are not allowed to access this resource.'}, 403
+        message, error_code = validate_admin_token(data['token'])
+        if message:
+            return message, error_code
 
         # get the data from all the users
         users = [{'email': user.email} for user in User.query.all()]
@@ -29,10 +29,9 @@ class AdminUserManagementResource(Resource):
         data = load_json()
 
         # validate the admin
-        privileges = jwt.decode(data['token'], app.config.get('SECRET_KEY'))
-
-        if not (privileges['admin_access'] is True):
-            return {'message': 'You are not allowed to access this resource.'}, 403
+        message, error_code = validate_admin_token(data['token'])
+        if message:
+            return message, error_code
 
         # find the user to delete via email
         user_email = data['user_email']
