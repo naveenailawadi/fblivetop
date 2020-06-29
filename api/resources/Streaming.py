@@ -5,7 +5,7 @@ from api.models import StreamerModel, db
 
 
 class StreamingResource(Resource):
-	# create a psot method to start streaming 
+	# create a psot method to start streaming.  
 	def post(self):
 		# get the user data
 		data = load_json()
