@@ -41,3 +41,23 @@ export const changePassword = async ({ email, oldPassword, newPassword }) => {
     return processErrorResponse(err);
   }
 };
+
+export const forgotPassword = async ({ email }) => {
+  try {
+    const res = await client().put('/UserManagement', { email });
+    return processResponse(res);
+  } catch (err) {
+    console.error(err);
+    return processErrorResponse(err);
+  }
+};
+
+export const resetPassword = async ({ email, token, newPassword }) => {
+  try {
+    const res = await client().put('/UserManagement', { token, newPassword });
+    return processResponse(res);
+  } catch (err) {
+    console.error(err);
+    return processErrorResponse(err);
+  }
+};

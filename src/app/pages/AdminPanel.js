@@ -11,7 +11,7 @@ const AdminPanel = (props) => {
     const [emailFilter, setEmailFilter] = useState('')
 
     const [usersList, setUsersList] = useState(null);
-    const [initialized, setInitialized] = useState(false);
+    const [initialized, setInitialized] = useState(true);
 
     const loadingUsersList = adminStore.loaders.getAllUsers;
 
@@ -22,7 +22,7 @@ const AdminPanel = (props) => {
         const { user } = authenticationStore.data;
         if (!user) return props.history.push(Routes.home.url);
 
-        adminStore.getAllUsers({ email: user.email, password: user.password, token: user.token }).then(response => {
+        adminStore.getAllUsers({ token: user.token }).then(response => {
             if (response.success && response.data) {
                 setUsersList(response.data);
                 setInitialized(true);

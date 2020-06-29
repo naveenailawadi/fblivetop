@@ -47,7 +47,7 @@ const SignIn = (props) => {
                 <div className="card-body">
                     <div>
                         <div className="form-group">
-                            <label htmlFor="signInUsername">Email</label>
+                            <label htmlFor="signInEmail">Email</label>
                             <input value={email}
                                 type="email"
                                 className="form-control"

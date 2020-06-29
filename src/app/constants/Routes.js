@@ -17,6 +17,16 @@ export default {
     title: 'Register',
     component: lazy(() => import('../pages/SignUp'))
   },
+  forgotPassword: {
+    url: '/forgot-password',
+    title: 'Forgot Password',
+    component: lazy(() => import('../pages/ForgotPassword'))
+  },
+  resetPassword: {
+    url: '/reset-password',
+    title: 'Reset Password',
+    component: lazy(() => import('../pages/ResetPassword'))
+  },
   adminPanel: {
     url: '/admin',
     title: 'Admin Panel',
