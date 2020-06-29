@@ -1,6 +1,6 @@
 from flask_restful import Resource
 from api.resources import load_json, validate_admin_token, TOKEN_MINUTES
-from api.models import db, User, validate_admin
+from api.models import db, UserModel, validate_admin
 from api import app
 from datetime import datetime as dt, timedelta
 import jwt
@@ -20,7 +20,7 @@ class AdminUserManagementResource(Resource):
             return message, error_code
 
         # get the data from all the users
-        users = [{'email': user.email} for user in User.query.all()]
+        users = [{'email': user.email} for user in UserModel.query.all()]
 
         return {'users': users}, 201
 
@@ -35,7 +35,7 @@ class AdminUserManagementResource(Resource):
 
         # find the user to delete via email
         user_email = data['user_email']
-        user = User.query.filter_by(email=user_email).first()
+        user = UserModel.query.filter_by(email=user_email).first()
 
         # if no user, return so
         if not user:

@@ -37,3 +37,21 @@ def validate_admin_token(token):
         return {'message': 'Token is expired'}, 401
     else:
         return None, None
+
+
+def validate_user_token(token):
+    try:
+        privileges = jwt.decode(token, app.config.get('SECRET_KEY'))
+    except ExpiredSignatureError:
+        return {'message': 'Token is expired'}, 401
+
+    try:
+        exp = privileges['exp']
+    except KeyError:
+        return {'message': 'invalid token', 'contains': privileges}, 401
+
+    if exp < time.time():
+        return {'message': 'Token is expired'}, 401
+
+    # if it gets here the token is valid --> get the user data
+    return privileges, 201

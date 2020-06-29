@@ -1,4 +1,4 @@
-from selenium import webdriver
+from seleniumwire import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.proxy import Proxy, ProxyType
 from selenium.webdriver.common.keys import Keys
@@ -7,7 +7,7 @@ import time
 SLEEP_INCREMENT = 2
 
 
-class Streamer:
+class StreamBot:
     def __init__(self, proxy=None):
         # create a webdriver to work with
         options = webdriver.ChromeOptions()
@@ -18,16 +18,17 @@ class Streamer:
         options.add_argument('--disable-notifications')
 
         # add a proxy if available
+        prox_options = None
         if proxy:
-            prox_str = f"{proxy['host']}:{proxy['port']}"
-            prox = Proxy()
-            prox.proxy_type = ProxyType.MANUAL
-            prox.http_proxy = prox_str
-            prox.socks_proxy = prox_str
-            prox.ssl_proxy = prox_str
-            options.Proxy = prox
+            prox_options = {
+                'proxy': {
+                    'http': f'http://{proxy.username}:{proxy["password"]}@{proxy["host"]}:{proxy["port"]}',
+                    'https': f'https://{proxy["username"]}:{proxy["password"]}@{proxy["host"]}:{proxy["port"]}',
+                    'no_proxy': 'localhost,127.0.0.1,dev_server:8080'
+                }
+            }
 
-        self.driver = webdriver.Chrome(options=options)
+        self.driver = webdriver.Chrome(options=options, seleniumwire_options=prox_options)
 
     # add some functions to login and stream things here
     def login(self, email, password):

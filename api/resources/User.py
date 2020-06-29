@@ -1,6 +1,6 @@
 from flask_restful import Resource
 from api.resources import load_json
-from api.models import db, User, validate_user
+from api.models import db, UserModel, validate_user
 from api import bcrypt, app
 from datetime import datetime as dt, timedelta
 import jwt
@@ -26,7 +26,7 @@ class UserManagementResource(Resource):
             return {'message': 'request must include email, password, and confirmed_password'}, 422
 
         # check if the user exists
-        test_user = User.query.filter_by(email=email).first()
+        test_user = UserModel.query.filter_by(email=email).first()
         if test_user:
             return {'message': f"There is already an account associated with {email}."}, 403
 
@@ -38,7 +38,7 @@ class UserManagementResource(Resource):
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
         # create a user and add it to the database
-        new_user = User(email=email, password=hashed_password)
+        new_user = UserModel(email=email, password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
 
