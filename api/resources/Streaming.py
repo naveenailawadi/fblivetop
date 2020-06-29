@@ -73,6 +73,7 @@ class StreamingResource(Resource):
 		db.session.commit()
 
 
+
 # create a resource for craeting streamers --> admin access only
 class StreamerManagementResource(Resource):
 	# create an endpoint for getting all the available streamers
@@ -86,6 +87,11 @@ class StreamerManagementResource(Resource):
 
 		# else get all the data
 		streamers_raw = StreamerModel.query.all()
+
+		# format the streamers raw into a viable dictionary
+		streamer_dicts = [streamer._asdict() for streamer in streamers_raw]
+
+		return {'status': 'success', 'streamers': streamer_dicts}, 201
 
 	# create an endpoint for adding a streamer
 	def post(self):

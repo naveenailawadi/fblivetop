@@ -2,6 +2,7 @@ from flask_restful import Api
 from api import app
 from api.resources.User import UserManagementResource, LoginResource
 from api.resources.Admin import AdminUserManagementResource, AdminLoginResource
+from api.resources.Streaming import StreamingResource, StreamerManagementResource
 
 
 # reroute traffic
@@ -13,8 +14,14 @@ def root_page():
 # create an api
 api = Api(app)
 
-# add user routes
+# user routes
 api.add_resource(UserManagementResource, '/UserManagement')
-api.add_resource(AdminUserManagementResource, '/AdminUserManagement')
 api.add_resource(LoginResource, '/Login')
+
+# admin routes
+api.add_resource(AdminUserManagementResource, '/AdminUserManagement')
 api.add_resource(AdminLoginResource, '/AdminLogin')
+api.add_resource(StreamerManagementResource, '/StreamerManagement')
+
+# streamer routes
+api.add_resource(StreamingResource, '/Streaming')

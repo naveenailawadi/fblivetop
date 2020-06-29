@@ -41,7 +41,7 @@ def validate_admin_token(token):
     elif exp < time.time():
         return {'message': 'Token is expired'}, 401
     else:
-        return None, None
+        return None, 201
 
 
 def validate_user_token(token):
