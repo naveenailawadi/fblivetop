@@ -1,5 +1,5 @@
 from flask_restful import Resource
-from api.resources import load_json, validate_user_token, validate_admin_token
+from api.resources import load_json, validate_user_token, validate_admin_token, load_header_token
 from api.FacebookStreamer import StreamBot
 from api.models import StreamerModel, db
 from datetime import datetime as dt
@@ -75,6 +75,19 @@ class StreamingResource(Resource):
 
 # create a resource for craeting streamers --> admin access only
 class StreamerManagementResource(Resource):
+	# create an endpoint for getting all the available streamers
+	def get(self):
+		token = load_header_token()
+
+		privileges, code = validate_admin_token(token)
+
+		if code >= 400:
+			return privileges, code
+
+		# else get all the data
+		streamers_raw = StreamerModel.query.all()
+
+	# create an endpoint for adding a streamer
 	def post(self):
 		# validate the data
 		data = load_json()
