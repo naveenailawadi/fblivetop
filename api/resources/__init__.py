@@ -17,6 +17,11 @@ def load_json():
 
     return json_data
 
+def load_header_token():
+    token = request.headers.get('token')
+
+    return token
+
 
 def validate_admin_token(token):
     try:

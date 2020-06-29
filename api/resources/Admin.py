@@ -1,5 +1,5 @@
 from flask_restful import Resource
-from api.resources import load_json, validate_admin_token, TOKEN_MINUTES
+from api.resources import load_json, validate_admin_token, load_header_token, TOKEN_MINUTES
 from api.models import db, UserModel, validate_admin
 from api import app
 from datetime import datetime as dt, timedelta
@@ -10,12 +10,12 @@ import jwt
 
 class AdminUserManagementResource(Resource):
     # create a post method to get all the users
-    def post(self):
+    def get(self):
         # get the admin_data and authenticate the admin
-        data = load_json()
+        token = load_header_token()
 
         # validate the admin
-        message, error_code = validate_admin_token(data['token'])
+        message, error_code = validate_admin_token(token)
         if message:
             return message, error_code
 
