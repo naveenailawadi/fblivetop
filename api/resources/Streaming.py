@@ -2,6 +2,7 @@ from flask_restful import Resource
 from api.resources import load_json, validate_user_token, validate_admin_token
 from api.FacebookStreamer import StreamBot
 from api.models import StreamerModel, db
+from datetime import datetime as dt
 
 
 class StreamingResource(Resource):
@@ -56,8 +57,9 @@ class StreamingResource(Resource):
 		else:
 			streamer = StreamBot()
 
-		# make stream model inactive
-		stream_model.active = False
+		# make stream model active and change last activity date
+		stream_model.active = True
+		stream_model.previous_activity_date = dt.now()
 		db.session.commit()
 
 		# login
@@ -66,8 +68,8 @@ class StreamingResource(Resource):
 		# start streaming
 		streamer.stream(stream_link, timeout)
 
-		# set the stream model to active again
-		stream_model.active = True
+		# set the stream model to inactiveactive again
+		stream_model.active = False
 		db.session.commit()
 
 
