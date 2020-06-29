@@ -1,5 +1,5 @@
 from flask_restful import Resource
-from api.resources import load_json, validate_user_token
+from api.resources import load_json, validate_user_token, validate_admin_token
 from api.FacebookStreamer import StreamBot
 from api.models import StreamerModel, db
 
@@ -69,4 +69,58 @@ class StreamingResource(Resource):
 		# set the stream model to active again
 		stream_model.active = True
 		db.session.commit()
+
+
+# create a resource for craeting streamers --> admin access only
+class StreamerManagementResource(Resource):
+	def post(self):
+		# validate the data
+		data = load_json()
+
+		# get the right stuff out
+		try:
+			token = data['token']
+
+			email = data['email']
+			email_password = data['emailPassword']
+
+			host = data['host']
+			port = data['port']
+
+			proxy_username = data['proxyUsername']
+			proxy_password = data['proxyPassword']
+
+		except KeyError:
+			return {'message': 'must include: token, host, port, email, emailPassword, proxyUsername, proxyPassword'}, 422
+
+		# validate the admin
+		privileges, code = validate_admin_token(token)
+
+		# return a code if invalid
+		if code >= 400:
+			return privileges, code
+
+		# else add the streamer
+		new_streamer = StreamerModel(host=host, port=port, email=email, email_password=email_password,
+									proxy_username=proxy_username, proxy_password=proxy_username)
+
+		db.session.add(new_streamer)
+		db.session.commit()
+
+		return {'status': 'success', 'message': f"added streamer on {host}:{port} under account {email}"}, 201
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
