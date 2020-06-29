@@ -3,7 +3,7 @@ import constants from '../constants';
 
 export const getAllUsers = async ({ email, password, token }) => {
     try {
-        const res = await client().post('/AdminUserManagement', { email, password, token });
+        const res = await client({ headers: { token } }).get('/AdminUserManagement');
         return processResponse(res);
     } catch (err) {
         console.error(err);
