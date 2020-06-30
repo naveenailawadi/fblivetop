@@ -1,7 +1,7 @@
 from flask_restful import Resource
 from api.resources import load_json, validate_user_token, validate_admin_token, load_header_token
 from api.FacebookStreamer import StreamBot
-from api.models import StreamerModel, db
+from api.models import StreamerModel, db, object_as_dict
 from datetime import datetime as dt
 from multiprocessing import Process
 
@@ -89,7 +89,8 @@ class StreamerManagementResource(Resource):
         streamers_raw = StreamerModel.query.all()
 
         # format the streamers raw into a viable dictionary
-        streamer_dicts = [streamer._asdict() for streamer in streamers_raw]
+        streamer_dicts = [object_as_dict(streamer)
+                          for streamer in streamers_raw]
 
         return {'status': 'success', 'streamers': streamer_dicts}, 201
 

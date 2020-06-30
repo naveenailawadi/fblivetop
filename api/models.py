@@ -10,7 +10,8 @@ class UserModel(db.Model):
     email = db.Column(db.String(320), nullable=False, unique=True)
     password = db.Column(db.String(50), nullable=False)
 
-    creation_date = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
+    creation_date = db.Column(
+        db.TIMESTAMP, server_default=db.func.current_timestamp())
 
 
 # create a model to hold the streamers
@@ -28,7 +29,8 @@ class StreamerModel(db.Model):
 
     # store info for activity
     active = db.Column(db.Boolean, default=False)
-    previous_activity_date = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
+    previous_activity_date = db.Column(
+        db.TIMESTAMP, server_default=db.func.current_timestamp())
 
     def proxy_dict(self):
         # format the proxy as a dictionary understandable by other classes
@@ -58,3 +60,12 @@ def validate_admin(email, password):
         return False
     else:
         return True
+
+
+def object_as_dict(obj):
+    obj_dict = {c.key: getattr(obj, c.key)
+                for c in db.inspect(obj).mapper.column_attrs}
+
+    obj_dict['previous_activity_date'] = obj_dict['previous_activity_date'].strftime(
+        '%s')
+    return obj_dict
