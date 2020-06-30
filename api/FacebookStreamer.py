@@ -1,6 +1,5 @@
 from seleniumwire import webdriver
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.proxy import Proxy, ProxyType
 from selenium.webdriver.common.keys import Keys
 import time
 
@@ -28,7 +27,8 @@ class StreamBot:
                 }
             }
 
-        self.driver = webdriver.Chrome(options=options, seleniumwire_options=prox_options)
+        self.driver = webdriver.Chrome(
+            options=options, seleniumwire_options=prox_options)
 
     # add some functions to login and stream things here
     def login(self, email, password):
@@ -37,7 +37,8 @@ class StreamBot:
         time.sleep(SLEEP_INCREMENT)
 
         # put in the keys at the correct box
-        username_box = self.driver.find_element_by_xpath('//input[@id="email"]')
+        username_box = self.driver.find_element_by_xpath(
+            '//input[@id="email"]')
         username_box.send_keys(email)
 
         password_box = self.driver.find_element_by_xpath('//input[@id="pass"]')
