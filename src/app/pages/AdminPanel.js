@@ -5,6 +5,7 @@ import { withRouter } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import Routes from '../constants/Routes';
 import Swal from 'sweetalert2';
+import LoadingScreen from '../components/LoadingScreen';
 
 const AdminPanel = (props) => {
     const dataStore = useContext(DataStoreContext);
@@ -72,8 +73,7 @@ const AdminPanel = (props) => {
 
     }
 
-    // TODO: LOADING SCREEN
-    if (!initialized) return <div>Loading...</div>
+    if (!initialized) return <LoadingScreen/>
 
     return (
         <div className="container-sm" style={{ maxWidth: '760px' }}>
@@ -90,40 +90,10 @@ const AdminPanel = (props) => {
                             onChange={evt => setEmailFilter(evt.target.value)}
                             value={emailFilter}
                         />
-                        {/* <div className="input-group-append">
-              <button
-                className="btn btn-dark btn-sm"
-                type="button"
-                // disabled={!query || !query.trim()}
-                // onClick={handleSearch}
-              >
-                <i className="fa fa-search" />
-              </button>
-            </div> */}
+
                     </div>
                 </div>
-                {/* <div className="form-group">
-                    <label className="font-weight-bold text-dark">Filter by username:</label>
-                    <div className="input-group">
-                        <input
-                            className="form-control"
-                            //   onKeyPress={evt => handlePressEnter(evt, handleSearch)}
-                            onChange={evt => setUsernameFilter(evt.target.value)}
-                            value={usernameFilter}
-                        />
-                        <div className="input-group-append">
-              <button
-                className="btn btn-dark btn-sm"
-                type="button"
-                // disabled={!query || !query.trim()}
-                // onClick={handleSearch}
-              >
-                <i className="fa fa-search" />
-              </button>
-            </div>
-                    </div>
-                </div> */}
-
+        
                 <table className="table table-striped">
                     <thead>
                         <tr>
@@ -141,7 +111,7 @@ const AdminPanel = (props) => {
                         </tr>)}
                     </tbody>
                 </table>
-                {!filteredUsersList || filteredUsersList.length === 0 ? <p>No users found.</p> : null}
+                {(!loadingUsersList && (!filteredUsersList || filteredUsersList.length === 0)) ? <p>No users found.</p> : null}
                 {loadingUsersList && (
                     <div className="card mb-3">
                         <div className="card-body text-center p-2 ">

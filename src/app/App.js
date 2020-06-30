@@ -14,8 +14,7 @@ import { withTranslation } from 'react-i18next';
 import { observer } from 'mobx-react-lite';
 import { getCookie } from './AppHelper';
 import { useState } from 'react';
-
-const LoadingScreen = () => <div>Loading..</div>
+import LoadingScreen from './components/LoadingScreen';
 
 const NotFound = () => <div>Not found.</div>
 
