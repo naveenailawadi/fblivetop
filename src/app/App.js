@@ -15,8 +15,7 @@ import { observer } from 'mobx-react-lite';
 import { getCookie } from './AppHelper';
 import { useState } from 'react';
 import LoadingScreen from './components/LoadingScreen';
-
-const NotFound = () => <div>Not found.</div>
+import NotFound from './pages/NotFound';
 
 const App = (props) => {
   const { t } = props;

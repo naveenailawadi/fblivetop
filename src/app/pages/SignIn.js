@@ -15,17 +15,18 @@ const SignIn = (props) => {
     const [remember, setRemember] = useState(true);
 
     const loadingLogIn = authenticationStore.loaders.logIn;
+    const loadingAdminLogIn = authenticationStore.loaders.adminLogIn;
 
     const handleSubmit = () => {
         if (!email || !password) return alert('One or more required fields are missing.');
         if (!isValidEmail(email)) return alert('Email is not valid.');
 
-        authenticationStore.logIn({ email, password, remember }).then(response => {
-            if (response.error) {
-                return alert('There was an error logging in. Please try again later.')
-            }
+        authenticationStore.adminLogIn({ email, password, remember }).then(adminResponse => {
+            authenticationStore.logIn({ email, password, remember }).then(response => {
+                if (response.error) {
+                    return alert('There was an error logging in. Please try again later.')
+                }
 
-            authenticationStore.adminLogIn({ email, password, remember }).then(adminResponse => {
                 props.history.push(Routes.home.url);
 
                 Swal.fire({
@@ -36,6 +37,8 @@ const SignIn = (props) => {
                     showConfirmButton: false,
                     timer: 1500,
                 });
+
+
             })
         })
     }
@@ -75,7 +78,7 @@ const SignIn = (props) => {
                             <input type="checkbox" className="form-check-input" id="signInRememebr" value={remember} onChange={() => setRemember(!remember)} />
                             <label className="form-check-label" htmlFor="signInRememebr">Remember me</label>
                         </div>
-                        <button className="btn btn-lg btn-primary btn-block" onClick={handleSubmit} disabled={loadingLogIn}>Submit</button>
+                        <button className="btn btn-lg btn-primary btn-block" onClick={handleSubmit} disabled={loadingLogIn || loadingAdminLogIn}>Submit</button>
                         <div className="d-flex justify-content-between mt-2">
                             <span>Don't have an account? <Link to={Routes.signUp.url}>Register</Link></span>
                             {/* <a href="#">Forgot Password?</a> */}

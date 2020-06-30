@@ -56,6 +56,9 @@ const AdminPanel = (props) => {
                         )
                     }
 
+                    const newUsersList = usersList.filter(i => i.email !== email);
+                    setUsersList(newUsersList);
+
                     Swal.fire(
                         'Deleted!',
                         `User with email ${email} has been deleted.`,
@@ -65,12 +68,6 @@ const AdminPanel = (props) => {
 
             }
         })
-        adminStore.deleteUser({ token: adminToken, userEmail: email }).then(response => {
-            if (response.error) {
-
-            }
-        })
-
     }
 
     if (!initialized) return <LoadingScreen/>
