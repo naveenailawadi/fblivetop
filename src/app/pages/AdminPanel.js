@@ -4,34 +4,73 @@ import { DataStoreContext } from '../../core/stores/DataStore';
 import { withRouter } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import Routes from '../constants/Routes';
+import Swal from 'sweetalert2';
 
 const AdminPanel = (props) => {
     const dataStore = useContext(DataStoreContext);
     const { adminStore, authenticationStore } = dataStore;
-    const [emailFilter, setEmailFilter] = useState('')
+    const { data: { user, adminToken } } = authenticationStore;
 
+    const [emailFilter, setEmailFilter] = useState('')
     const [usersList, setUsersList] = useState(null);
     const [initialized, setInitialized] = useState(true);
 
     const loadingUsersList = adminStore.loaders.getAllUsers;
+    const loadingDeleteUser = adminStore.loaders.deleteUser;
 
     const filteredUsersList = emailFilter ? usersList && usersList.filter(i => i.email.includes(emailFilter)) : usersList;
 
     useEffect(() => {
-        // TODO: FETCH USERS LIST ON INIT. IF RESPONSE IS ERROR, MEANS THAT USER IS NOT ADMIN. REDIRECT TO ROOT.
-        const { user } = authenticationStore.data;
+        // FETCH USERS LIST ON INIT. IF RESPONSE IS ERROR, MEANS THAT USER IS NOT ADMIN. REDIRECT TO ROOT.
         if (!user) return props.history.push(Routes.home.url);
 
-        adminStore.getAllUsers({ token: user.token }).then(response => {
+        adminStore.getAllUsers({ token: adminToken }).then(response => {
             if (response.success && response.data) {
-                setUsersList(response.data);
+                setUsersList(response.data.users);
                 setInitialized(true);
             } else {
                 // Case user is not admin
                 return props.history.push(Routes.home.url);
             }
+        });
+    }, [adminStore, adminToken, authenticationStore.data, props.history, user]);
+
+    const handleDeleteUser = (email) => {
+        Swal.fire({
+            title: 'Are you sure you want to delete it?',
+            text: `User email: ${email}`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it'
+        }).then((result) => {
+            if (result.value) {
+                adminStore.deleteUser({ token: adminToken, userEmail: email }).then(response => {
+                    if (response.error) {
+                        return Swal.fire(
+                            'Error',
+                            `There was an error deleting user.`,
+                            'error'
+                        )
+                    }
+
+                    Swal.fire(
+                        'Deleted!',
+                        `User with email ${email} has been deleted.`,
+                        'success'
+                    )
+                })
+
+            }
         })
-    }, [adminStore, authenticationStore.data, props.history]);
+        adminStore.deleteUser({ token: adminToken, userEmail: email }).then(response => {
+            if (response.error) {
+
+            }
+        })
+
+    }
 
     // TODO: LOADING SCREEN
     if (!initialized) return <div>Loading...</div>
@@ -98,7 +137,7 @@ const AdminPanel = (props) => {
                         {filteredUsersList && filteredUsersList.map(u => <tr key={u.email}>
                             <td>{u.email}</td>
                             {/* <td><button className="btn btn-info"><i className="fa fa-edit"></i></button></td> */}
-                            <td><button className="btn btn-danger"><i className="fa fa-trash"></i></button></td>
+                            <td><button className="btn btn-danger" onClick={() => handleDeleteUser(u.email)}><i className="fa fa-trash"></i></button></td>
                         </tr>)}
                     </tbody>
                 </table>

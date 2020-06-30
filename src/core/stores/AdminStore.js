@@ -42,12 +42,11 @@ class AdminStore {
         return response;
     };
 
-    deleteUser = async ({ email, password, userEmail }) => {
+    deleteUser = async ({ token, userEmail }) => {
         this.loaders.deleteUser = true;
 
         const response = await AdminAPI.deleteUser({
-            email,
-            password,
+            token,
             userEmail
         }).finally(() => {
             this.loaders.deleteUser = false;

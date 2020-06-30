@@ -30,9 +30,14 @@ const App = (props) => {
   useEffect(() => {
     // Check if there is a stored user
     const userCookie = getCookie("user");
+    const adminTokenCookie = getCookie("adminToken");
 
     if (userCookie) {
       authenticationStore.setValueByKey('user', JSON.parse(userCookie));
+    }
+
+    if (adminTokenCookie) {
+      authenticationStore.setValueByKey('adminToken', adminTokenCookie);
     }
 
     setInitialized(true);

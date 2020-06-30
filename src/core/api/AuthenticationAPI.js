@@ -11,6 +11,17 @@ export const logIn = async ({ email, password }) => {
   }
 };
 
+export const adminLogIn = async ({ email, password }) => {
+  try {
+    const res = await client().post('/AdminLogin', { email, password });
+    return processResponse(res);
+  } catch (err) {
+    console.error(err);
+    return processErrorResponse(err);
+  }
+};
+
+
 
 export const signUp = async ({ email, password }) => {
   try {

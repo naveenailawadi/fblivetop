@@ -1,11 +1,12 @@
 import React, { useState, useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import Routes from '../constants/Routes';
 import { isValidEmail, handlePressEnter } from '../AppHelper';
 import { DataStoreContext } from '../../core/stores/DataStore';
 import { observer } from 'mobx-react-lite';
+import Swal from 'sweetalert2';
 
-const SignUp = () => {
+const SignUp = (props) => {
     const dataStore = useContext(DataStoreContext);
     const { authenticationStore } = dataStore;
     const { isAuthenticated } = authenticationStore;
@@ -38,8 +39,13 @@ const SignUp = () => {
                     alert(response.response.data.message);
                 else alert('There was a problem when signing up. Please try again later.');
             } else {
-                // TODO: HANDLE SUCCESSFULL LOGIN
-                alert('Account successfully created!');
+                Swal.fire(
+                    'Welcome!',
+                    `Account successfully created!`,
+                    'success'
+                )
+
+                props.history.push(Routes.signIn.url)
                 handleResetValues('');
             }
         })
@@ -85,7 +91,7 @@ const SignUp = () => {
                         <button className="btn btn-lg btn-primary btn-block" onClick={handleSubmit} disabled={signUpLoading}>Submit</button>
                         <div className="d-flex justify-content-between mt-2">
                             <span>Already have an account? <Link to={Routes.signIn.url}>Sign In</Link></span>
-                            <a href="#">Forgot Password?</a>
+                            <Link to={Routes.forgotPassword.url}>Forgot Password?</Link>
 
                         </div>
                     </div>
@@ -95,4 +101,4 @@ const SignUp = () => {
     );
 }
 
-export default observer(SignUp);
+export default withRouter(observer(SignUp));

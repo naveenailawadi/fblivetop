@@ -12,7 +12,8 @@ class AuthenticationStore {
 
   // Stored data
   data = {
-    user: undefined
+    user: undefined,
+    adminToken: undefined,
   };
 
   // Loaders
@@ -20,6 +21,7 @@ class AuthenticationStore {
     user: false,
     signUp: false,
     logIn: false,
+    adminLogIn: false,
     changePassword: false,
     deleteAccount: false,
     forgotPassword: false,
@@ -67,6 +69,29 @@ class AuthenticationStore {
 
 
       this.setValueByKey('user', user);
+    }
+
+    return response;
+  };
+
+  adminLogIn = async ({ email, password, remember }) => {
+    this.loaders.adminLogIn = true;
+
+    const response = await AuthenticationAPI.adminLogIn({ email, password }).finally(
+      () => {
+        this.loaders.adminLogIn = false;
+      }
+    );
+
+    if (response.success && response.data) {
+      const adminToken = response.data.token;
+
+      // Case user wants to remember
+      let sessionDays = 3 / 24; // 3 Hours
+      if (remember) sessionDays = 7
+
+      setCookie("adminToken", adminToken, sessionDays);
+      this.setValueByKey('adminToken', adminToken);
     }
 
     return response;

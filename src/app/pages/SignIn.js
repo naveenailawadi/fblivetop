@@ -25,16 +25,18 @@ const SignIn = (props) => {
                 return alert('There was an error logging in. Please try again later.')
             }
 
-            props.history.push(Routes.home.url);
+            authenticationStore.adminLogIn({ email, password, remember }).then(adminResponse => {
+                props.history.push(Routes.home.url);
 
-            Swal.fire({
-                type: 'success',
-                title: `Welcome back!`,
-                text: 'Logged in successfully.',
-                icon: 'success',
-                showConfirmButton: false,
-                timer: 1500,
-            });
+                Swal.fire({
+                    type: 'success',
+                    title: `Welcome back!`,
+                    text: 'Logged in successfully.',
+                    icon: 'success',
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
+            })
         })
     }
 

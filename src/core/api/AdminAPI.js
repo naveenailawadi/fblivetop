@@ -11,9 +11,9 @@ export const getAllUsers = async ({ email, password, token }) => {
     }
 };
 
-export const deleteUser = async ({ email, password, userEmail }) => {
+export const deleteUser = async ({ token, userEmail }) => {
     try {
-        const res = await client().delete('/AdminUserManagement', { data: { email, password, user_email: userEmail } });
+        const res = await client().delete('/AdminUserManagement', { data: { token, user_email: userEmail } });
         return processResponse(res);
     } catch (err) {
         console.error(err);
