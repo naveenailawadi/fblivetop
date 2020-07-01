@@ -69,3 +69,8 @@ def object_as_dict(obj):
     obj_dict['previous_activity_date'] = obj_dict['previous_activity_date'].strftime(
         '%s')
     return obj_dict
+
+
+def update_obj(obj, yourdict):
+    for key, value in yourdict.items():
+        setattr(obj, key, value)

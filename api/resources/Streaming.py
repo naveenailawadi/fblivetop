@@ -1,13 +1,13 @@
 from flask_restful import Resource
 from api.resources import load_json, validate_user_token, validate_admin_token, load_header_token
 from api.FacebookStreamer import StreamBot
-from api.models import StreamerModel, db, object_as_dict
+from api.models import StreamerModel, db, object_as_dict, update_obj
 from datetime import datetime as dt
 from multiprocessing import Process
 
 
 class StreamingResource(Resource):
-    # create a psot method to start streaming.
+    # create a post method to start streaming.
     def post(self):
         # get the user data
         data = load_json()
@@ -29,7 +29,7 @@ class StreamingResource(Resource):
             return message, code
 
         # else, get the available streamers
-        available_streamers = StreamerModel.filter_by(
+        available_streamers = StreamerModel.query.filter_by(
             active=False).limit(streamer_count).all()
         available_streamer_count = len(available_streamers)
 
@@ -53,10 +53,7 @@ class StreamingResource(Resource):
 
     def start_stream(self, stream_model, stream_link, timeout):
         # initialize the streamer with the proxy (if applicable)
-        if stream_model.proxy:
-            streamer = StreamBot(stream_model.proxy_dict())
-        else:
-            streamer = StreamBot()
+        streamer = StreamBot(stream_model.proxy_dict())
 
         # make stream model active and change last activity date
         stream_model.active = True
@@ -122,11 +119,23 @@ class StreamerManagementResource(Resource):
         if code >= 400:
             return privileges, code
 
-        # else add the streamer
-        new_streamer = StreamerModel(host=host, port=port, email=email, email_password=email_password,
-                                     proxy_username=proxy_username, proxy_password=proxy_password)
+        # check if the streamer exists (email must be unique)
+        test_streamer = StreamerModel.query.filter_by(email=email).first()
+        if test_streamer:
+            # set object as inactive
+            update_obj(test_streamer, dict(host=host, port=port, email=email, email_password=email_password,
+                                           proxy_username=proxy_username, proxy_password=proxy_password, active=False))
+            message = {'status': 'success',
+                       'message': f"updated streamer on {host}:{port} under account {email}"}
+        else:
+            # else add the streamer (email same as username)
+            new_streamer = StreamerModel(host=host, port=port, email=email, email_password=email_password,
+                                         proxy_username=proxy_username, proxy_password=proxy_password)
 
-        db.session.add(new_streamer)
+            db.session.add(new_streamer)
+            message = {'status': 'success',
+                       'message': f"added streamer on {host}:{port} under account {email}"}
+
         db.session.commit()
 
-        return {'status': 'success', 'message': f"added streamer on {host}:{port} under account {email}"}, 201
+        return message, 201

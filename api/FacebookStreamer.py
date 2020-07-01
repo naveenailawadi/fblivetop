@@ -19,9 +19,10 @@ class StreamBot:
         # add a proxy if available
         prox_options = None
         if proxy:
+            print(proxy)
             prox_options = {
                 'proxy': {
-                    'http': f'http://{proxy.username}:{proxy["password"]}@{proxy["host"]}:{proxy["port"]}',
+                    'http': f'http://{proxy["username"]}:{proxy["password"]}@{proxy["host"]}:{proxy["port"]}',
                     'https': f'https://{proxy["username"]}:{proxy["password"]}@{proxy["host"]}:{proxy["port"]}',
                     'no_proxy': 'localhost,127.0.0.1,dev_server:8080'
                 }
@@ -67,6 +68,7 @@ class StreamBot:
             end = time.time()
 
             if (end - start) > timeout:
+                print(f"{end-start} seconds elapsed")
                 break
 
         # close the streamer
