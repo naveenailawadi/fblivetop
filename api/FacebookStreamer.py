@@ -3,7 +3,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 import time
 
-SLEEP_INCREMENT = 2
+SLEEP_INCREMENT = 10
 
 
 class StreamBot:
@@ -19,7 +19,6 @@ class StreamBot:
         # add a proxy if available
         prox_options = None
         if proxy:
-            print(proxy)
             prox_options = {
                 'proxy': {
                     'http': f'http://{proxy["username"]}:{proxy["password"]}@{proxy["host"]}:{proxy["port"]}',
