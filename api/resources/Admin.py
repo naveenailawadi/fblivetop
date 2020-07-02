@@ -1,6 +1,6 @@
 from flask_restful import Resource
 from api.resources import load_json, validate_admin_token, load_header_token, TOKEN_MINUTES
-from api.models import db, UserModel, validate_admin
+from api.models import db, UserModel, validate_admin, object_as_dict
 from api import app
 from datetime import datetime as dt, timedelta
 import jwt
@@ -20,11 +20,41 @@ class AdminUserManagementResource(Resource):
             return message, error_code
 
         # get the data from all the users
-        users = [{'email': user.email} for user in UserModel.query.all()]
+        users = [object_as_dict(user) for user in UserModel.query.all()]
 
         return {'users': users}, 201
 
+    # create a put method to update user balances
+    def put(self):
+        data = load_json()
+
+        # get the information
+        try:
+            token = data['token']
+            user_email = data['user_email']
+            new_balance = data['new_balance']
+        except KeyError:
+            return {'message': 'request must include token, user_email, new_balance'}, 422
+
+        # validate the token
+        message, error_code = validate_admin_token(token)
+        if message:
+            return message, error_code
+
+        # get the user by email
+        user = UserModel.query.filter_by(email=user_email).first()
+
+        if not user:
+            return {'message': f"no account associated with {user_email}"}, 404
+
+        # else update the balance
+        user.balance = new_balance
+        db.session.commit()
+
+        return {'status': 'success', 'message': f"{user.email} now has a ${'{:.2f}'.format(user.balance)} balance"}, 201
+
     # create a method to delete users from the admin page (without a password)
+
     def delete(self):
         data = load_json()
 
@@ -58,6 +88,7 @@ class AdminLoginResource(Resource):
             return {'message': 'You are not allowed to access this resource.'}, 403
 
         # get a token and give it to the admin
-        token = jwt.encode({'admin_access': True, 'exp': dt.utcnow() + timedelta(minutes=TOKEN_MINUTES)}, app.config['SECRET_KEY']).decode('UTF-8')
+        token = jwt.encode({'admin_access': True, 'exp': dt.utcnow(
+        ) + timedelta(minutes=TOKEN_MINUTES)}, app.config['SECRET_KEY']).decode('UTF-8')
 
         return {'status': 'success', 'token': token}
