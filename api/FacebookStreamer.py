@@ -1,5 +1,5 @@
 from seleniumwire import webdriver
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException
 from selenium.webdriver.common.keys import Keys
 import time
 
@@ -65,7 +65,11 @@ class StreamBot:
                 play_button = None
 
         if play_button:
-            play_button.click()
+            try:
+                play_button.click()
+            except ElementNotInteractableException:
+                print('Play button already clicked')
+                pass
 
         # stop streaming on timeout
         start = time.time()
