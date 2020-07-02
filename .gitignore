@@ -25,6 +25,9 @@ yarn-error.log*
 # sqllite database
 *.db
 
+# binary
+/__pycache__
+
 # account information (in txt files)
 *.txt
 admin_config.py
