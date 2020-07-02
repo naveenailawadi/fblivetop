@@ -3,7 +3,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 import time
 
-SLEEP_INCREMENT = 10
+SLEEP_INCREMENT = 15
 
 
 class StreamBot:
@@ -19,18 +19,16 @@ class StreamBot:
         # add a proxy if available
         prox_options = None
         if proxy:
-            my_proxy = f'{proxy["host"]}:{proxy["port"]}'
-            options.add_argument(f"--proxy-server=http://{my_proxy}")
+            my_proxy = f"{proxy['username']}:{proxy['password']}@{proxy['host']}:{proxy['port']}"
 
-            '''
+            # authenticated
             prox_options = {
                 'proxy': {
-                    'http': my_proxy,
-                    'https': my_proxy,
+                    'http': f"http://{my_proxy}",
+                    'https': f"https://{my_proxy}",
                     'no_proxy': 'localhost,127.0.0.1,dev_server:8080'
                 }
             }
-            '''
 
         self.driver = webdriver.Chrome(
             options=options, seleniumwire_options=prox_options)
@@ -83,6 +81,9 @@ class StreamBot:
         # close the streamer
         self.close()
 
+    def check_proxy(self):
+        self.driver.get('https://whatsmyip.com/')
+
     def close(self):
         self.driver.close()
 
@@ -90,17 +91,18 @@ class StreamBot:
 if __name__ == '__main__':
     proxy = {
         "id": 1,
-        "host": "138.229.96.79",
-        "port": "1080",
+        "host": "45.94.39.167",
+        "port": "8000",
         "email": "79647676281",
         "email_password": "lJzXfbK2Fy",
-        "proxy_username": "proxy_usr",
-        "proxy_password": "proxy_pass",
+        "username": "xVtJqa",
+        "password": "7UjRvE",
         "active": True,
         "previous_activity_date": "1593642500"
     }
     bot = StreamBot(proxy=proxy)
+
     bot.login(proxy['email'], proxy['email_password'])
 
     bot.stream(
-        'https://www.facebook.com/80eightyofficial/videos/600528080873821', 30)
+        'https://www.facebook.com/PoolsharkGaming/videos/2967066136681357', 30)
