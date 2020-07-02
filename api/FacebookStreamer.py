@@ -19,13 +19,18 @@ class StreamBot:
         # add a proxy if available
         prox_options = None
         if proxy:
+            my_proxy = f'{proxy["host"]}:{proxy["port"]}'
+            options.add_argument(f"--proxy-server=http://{my_proxy}")
+
+            '''
             prox_options = {
                 'proxy': {
-                    'http': f'http://{proxy["username"]}:{proxy["password"]}@{proxy["host"]}:{proxy["port"]}',
-                    'https': f'https://{proxy["username"]}:{proxy["password"]}@{proxy["host"]}:{proxy["port"]}',
+                    'http': my_proxy,
+                    'https': my_proxy,
                     'no_proxy': 'localhost,127.0.0.1,dev_server:8080'
                 }
             }
+            '''
 
         self.driver = webdriver.Chrome(
             options=options, seleniumwire_options=prox_options)
@@ -55,8 +60,14 @@ class StreamBot:
         try:
             play_button = self.driver.find_element_by_xpath('//i//div')
         except NoSuchElementException:
-            play_button = self.driver.find_element_by_xpath('//i[@id="u_1_0"]')
-        play_button.click()
+            try:
+                play_button = self.driver.find_element_by_xpath(
+                    '//i[@id="u_1_0"]')
+            except NoSuchElementException:
+                play_button = None
+
+        if play_button:
+            play_button.click()
 
         # stop streaming on timeout
         start = time.time()
@@ -67,7 +78,6 @@ class StreamBot:
             end = time.time()
 
             if (end - start) > timeout:
-                print(f"{end-start} seconds elapsed")
                 break
 
         # close the streamer
@@ -76,4 +86,21 @@ class StreamBot:
     def close(self):
         self.driver.close()
 
-# https://www.facebook.com/StoneMountain64/videos/636677343609316
+
+if __name__ == '__main__':
+    proxy = {
+        "id": 1,
+        "host": "138.229.96.79",
+        "port": "1080",
+        "email": "79647676281",
+        "email_password": "lJzXfbK2Fy",
+        "proxy_username": "proxy_usr",
+        "proxy_password": "proxy_pass",
+        "active": True,
+        "previous_activity_date": "1593642500"
+    }
+    bot = StreamBot(proxy=proxy)
+    bot.login(proxy['email'], proxy['email_password'])
+
+    bot.stream(
+        'https://www.facebook.com/80eightyofficial/videos/600528080873821', 30)
