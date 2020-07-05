@@ -108,9 +108,7 @@ if __name__ == '__main__':
     }
     bot = StreamBot(proxy=proxy, headless=False)
     bot.check_proxy()
-    '''
     bot.login(proxy['email'], proxy['email_password'])
 
     bot.stream(
         'https://www.facebook.com/PoolsharkGaming/videos/2967066136681357', 30)
-    '''
