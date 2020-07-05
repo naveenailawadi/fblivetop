@@ -42,15 +42,15 @@ const AdminPanel = (props) => {
         // FETCH USERS LIST ON INIT. IF RESPONSE IS ERROR, MEANS THAT USER IS NOT ADMIN. REDIRECT TO ROOT.
         if (!user) return props.history.push(Routes.home.url);
 
-        adminStore.getAllUsers({ token: adminToken }).then(response => {
-            if (response.success && response.data) {
-                setUsersList(response.data.users);
-                setInitialized(true);
-            } else {
-                // Case user is not admin
-                return props.history.push(Routes.home.url);
-            }
-        });
+        // adminStore.getAllUsers({ token: adminToken }).then(response => {
+        //     if (response.success && response.data) {
+        //         setUsersList(response.data.users);
+        //         setInitialized(true);
+        //     } else {
+        //         // Case user is not admin
+        //         return props.history.push(Routes.home.url);
+        //     }
+        // });
     }, [adminStore, adminToken, authenticationStore.data, props.history, user]);
 
     // Reset all values on tab change
@@ -78,6 +78,7 @@ const AdminPanel = (props) => {
                 if (cb)
                     cb();
             } else {
+                // TODO: RENEW ADMIN TOKEN IN CASE THERE IS ONE AND TRY.
                 // Case user is not admin
                 Swal.fire({
                     title: 'Unauthorized',
@@ -96,6 +97,7 @@ const AdminPanel = (props) => {
                 if (cb)
                     cb();
             } else {
+                // TODO: RENEW ADMIN TOKEN IN CASE THERE IS ONE AND TRY.
                 // Case user is not admin
                 Swal.fire({
                     title: 'Unauthorized',
@@ -209,31 +211,72 @@ const AdminPanel = (props) => {
     useEffect(() => {
         if (!uploadStreamersCsv || uploadingStreamers) return;
 
-        const streamersList = [];
+        const parsedStreamersList = [];
 
         const streamersData = [...uploadStreamersCsv];
-        console.log(uploadStreamersCsv);
         // Remove fiirst row (head)
-        streamersData.shift();
+        const tableHead = streamersData.shift();
+
 
         setUploadingStreamers(true);
 
-        // streamersData.forEach((streamerRow) => {
-        //     const newStreamer = {
-        //         email: '',
-        //         emailPassword: '',
-        //         port: '',
-        //         host: '',
-        //         proxyUsername: '',
-        //         proxyPassword: '',
-        //     };
+        streamersData.forEach((streamerRow) => {
+            const newStreamer = {};
+            streamerRow.forEach((cellValue, cellIndex) => {
+                newStreamer[tableHead[cellIndex]] = cellValue;
+            });
+            parsedStreamersList.push(newStreamer);
+        });
 
-        //     adminStore.addStreamer({ token: adminToken, ...newStreamer });
-        // }
-        
-        setUploadingStreamers(false);
+        const isStreamerValid = i => i.email && i.emailPassword && i.port && i.host && i.proxyUsername && i.proxyPassword;
 
-    }, [uploadStreamersCsv, uploadingStreamers]);
+        // Purge rows that were not complete.
+        const validRows = parsedStreamersList.filter(i => isStreamerValid(i));
+        const invalidRows = parsedStreamersList.filter(i => !isStreamerValid(i));
+
+        console.log('Invalid rows: ', invalidRows);
+
+        let done = 0;
+        const errorStreamers = [];
+        const successStreamers = [];
+
+        validRows.forEach(streamer => {
+            adminStore.addStreamer({ token: adminToken, ...streamer }).then((response) => {
+                done += 1;
+
+                if (response.error) {
+                    errorStreamers.push(streamer);
+                } else {
+                    successStreamers.push(streamer);
+                }
+
+                if (done === validRows.length) {
+                    // Finished
+                    console.log('Success streamers: ', successStreamers);
+                    console.log('Error streamers: ', errorStreamers);
+
+                    Swal.fire({
+                        title: 'Upload finished!',
+                        html: `Streamers upload finished. 
+                        <br> 
+                        Successfully uploaded streamers emails: ${successStreamers.map(i => i.email).join(", ")}. 
+                        ${errorStreamers.length > 0 ? `
+                        <br>
+                         Error streamers emails: ${errorStreamers.map(i => i.email).join(", ")}. 
+                         <br>
+                        ` : ''}
+                          ${invalidRows.length} rows were ignored because one or more required fields were missing.`,
+                        icon: 'success'
+                    });
+
+                    handleFetchStreamersList();
+
+                    setUploadingStreamers(false);
+                }
+            })
+        })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [uploadStreamersCsv]);
 
     const handleUploadStreamersFromCsv = () => {
         const fileInput = document.getElementById('uploadStreamersCsvInput');

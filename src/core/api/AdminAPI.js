@@ -43,7 +43,7 @@ export const setUserBalance = async ({ token, userEmail, balance }) => {
 
 export const addStreamer = async ({ token, email, emailPassword, port, host, proxyUsername, proxyPassword }) => {
     try {
-        const res = await client({ headers: { token } }).put('/StreamerManagement', { token: token, email: email, email_password: emailPassword, port, host, proxy_username: proxyUsername, proxy_password: proxyPassword });
+        const res = await client({ headers: { token } }).post('/StreamerManagement', { token: token, email: email, emailPassword, port, host, proxyUsername, proxyPassword });
         return processResponse(res);
     } catch (err) {
         console.error(err);
