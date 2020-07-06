@@ -47,7 +47,7 @@ class FloatConstantModel(db.Model):
     constant = db.Column(db.Float, unique=False, default=0.0)
 
     update_date = db.Column(
-        db.TIMESTAMP, server_default=db.func.current_timestamp())
+        db.TIMESTAMP, server_default=db.text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'))
 
 
 # create a function to validate users
