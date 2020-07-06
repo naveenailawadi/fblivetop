@@ -1,8 +1,0 @@
-1593713586291	mozrunner::runner	INFO	Running command: "/Applications/Firefox.app/Contents/MacOS/firefox-bin" "-marionette" "--no-sandbox" "--window-size=1420,1080" "--disable-gpu" "--disable-notifications" "-foreground" "-no-remote" "-profile" "/var/folders/28/nkw3cfhs5ssbsmnr8nngy0q40000gq/T/rust_mozprofileK10pTN"
-1593713590838	Marionette	INFO	Listening on port 61344
-1593713590861	Marionette	WARN	TLS certificate errors will be ignored for this session
-1593713590865	Marionette	INFO	Proxy settings initialised: {"proxyType":"manual","httpProxy":"127.0.0.1:1080","noProxy":[],"sslProxy":"127.0.0.1:1080"}
-
-###!!! [Parent][MessageChannel] Error: (msgtype=0xB000E,name=PBackgroundIDBDatabase::Msg_CloseAfterInvalidationComplete) Channel error: cannot send/recv
-
-1593713599153	Marionette	INFO	Stopped listening on port 61344

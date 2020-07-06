@@ -5,9 +5,8 @@ from api import app
 from datetime import datetime as dt, timedelta
 import jwt
 
+
 # create a class for admins to get all the user data
-
-
 class AdminUserManagementResource(Resource):
     # create a post method to get all the users
     def get(self):
