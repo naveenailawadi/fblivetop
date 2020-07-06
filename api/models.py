@@ -94,3 +94,9 @@ def object_as_dict(obj):
 def update_obj(obj, yourdict):
     for key, value in yourdict.items():
         setattr(obj, key, value)
+
+
+def get_float_constant(name):
+    constant = FloatConstantModel.query.filter_by(name=name).first().constant
+
+    return constant
