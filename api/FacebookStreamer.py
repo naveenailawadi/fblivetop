@@ -7,14 +7,16 @@ SLEEP_INCREMENT = 15
 
 
 class StreamBot:
-    def __init__(self, proxy=None):
+    def __init__(self, proxy=None, headless=True):
         # create a webdriver to work with
         options = webdriver.ChromeOptions()
         options.add_argument('--no-sandbox')
         options.add_argument('--window-size=1420,1080')
-        options.add_argument('--headless')
         options.add_argument('--disable-gpu')
         options.add_argument('--disable-notifications')
+
+        if headless:
+            options.add_argument('--headless')
 
         # add a proxy if available
         prox_options = None
@@ -95,17 +97,17 @@ class StreamBot:
 if __name__ == '__main__':
     proxy = {
         "id": 1,
-        "host": "45.94.39.167",
-        "port": "8000",
+        "host": "138.229.96.79",
+        "port": "4444",
         "email": "79647676281",
         "email_password": "lJzXfbK2Fy",
-        "username": "xVtJqa",
-        "password": "7UjRvE",
+        "username": "1a9e45a34f",
+        "password": "OPSXjqHF",
         "active": True,
         "previous_activity_date": "1593642500"
     }
-    bot = StreamBot(proxy=proxy)
-
+    bot = StreamBot(proxy=proxy, headless=False)
+    bot.check_proxy()
     bot.login(proxy['email'], proxy['email_password'])
 
     bot.stream(
