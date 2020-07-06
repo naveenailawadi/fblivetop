@@ -31,3 +31,4 @@ yarn-error.log*
 # account information (in txt files)
 *.txt
 admin_config.py
+secrets.py
