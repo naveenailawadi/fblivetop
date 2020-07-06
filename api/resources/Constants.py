@@ -1,6 +1,7 @@
 from flask_restful import Resource
 from api.resources import load_json, validate_admin_token, load_header_token
 from api.models import db, FloatConstantModel, object_as_dict
+from datetime import datetime as dt
 
 
 # make a class to handle updating and getting the constants
@@ -43,7 +44,11 @@ class FloatConstantResource(Resource):
         # change the constant
         constant = FloatConstantModel.query.filter_by(
             name=constant_name).first()
-        constant.value = new_constant_value
+
+        if not constant:
+            return {'message': f"Did not find any constants associated with {constant_name}"}
+
+        constant.constant = new_constant_value
         db.session.commit()
 
-        return {'status': 'success', 'message': f"Changed {constant.name} to {constant.value}"}, 201
+        return {'status': 'success', 'message': f"Changed {constant.name} to {constant.constant}"}, 201
