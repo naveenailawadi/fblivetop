@@ -39,6 +39,17 @@ class StreamerModel(db.Model):
         return {'host': self.host, 'port': self.port, 'username': self.proxy_username, 'password': self.proxy_password}
 
 
+# create a model for constants
+class FloatConstantModel(db.Model):
+    __tablename__ = 'float_constants'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), unique=True, default=None, nullable=False)
+    constant = db.Column(db.Float, unique=False, default=0.0)
+
+    update_date = db.Column(
+        db.TIMESTAMP, server_default=db.text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'))
+
+
 # create a function to validate users
 def validate_user(email, password):
     # get the user
@@ -83,3 +94,9 @@ def object_as_dict(obj):
 def update_obj(obj, yourdict):
     for key, value in yourdict.items():
         setattr(obj, key, value)
+
+
+def get_float_constant(name):
+    constant = FloatConstantModel.query.filter_by(name=name).first().constant
+
+    return constant

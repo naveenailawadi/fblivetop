@@ -25,9 +25,11 @@ yarn-error.log*
 # sqllite database
 *.db
 
-# binary
+# binary and selenium logs
 __pycache__/
+geckodriver.log
 
 # account information (in txt files)
 *.txt
 admin_config.py
+secrets.py

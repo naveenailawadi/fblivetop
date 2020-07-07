@@ -3,6 +3,7 @@ from api import app
 from api.resources.User import UserManagementResource, LoginResource
 from api.resources.Admin import AdminUserManagementResource, AdminLoginResource
 from api.resources.Streaming import StreamingResource, StreamerManagementResource
+from api.resources.Constants import FloatConstantResource
 
 
 # reroute traffic
@@ -25,3 +26,6 @@ api.add_resource(StreamerManagementResource, '/StreamerManagement')
 
 # streamer routes
 api.add_resource(StreamingResource, '/Streaming')
+
+# constant routes
+api.add_resource(FloatConstantResource, '/FloatConstants')
