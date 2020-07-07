@@ -1,11 +1,44 @@
 import _ from 'lodash';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import validator from 'validator';
+import { DataStoreContext } from '../../core/stores/DataStore';
+import { observer } from 'mobx-react-lite';
+import Swal from 'sweetalert2';
 
 const StreamingForm = () => {
+    const dataStore = useContext(DataStoreContext);
+    const { streamingStore, authenticationStore } = dataStore;
+
+    const { data: { user } } = authenticationStore;
+
     const [minutes, setMinutes] = useState(1);
     const [fbAccounts, setFbAccounts] = useState(1);
     const [streamUrl, setStreamUrl] = useState('');
+    const [streamingCost, setStreamingCost] = useState(null);
+    const [userBalance, setUserBalance] = useState(null);
+    const [availableStreamers, setAvailableStreamers] = useState(null);
+
+    const loadingCheckStreamingCost = streamingStore.loaders.checkStreamingCost;
+    const loadingGetStreamingBotsAvailable = streamingStore.loaders.getStreamingBotsAvailable;
+    const loadingStreamLink = streamingStore.loaders.streamLink;
+
+    const enoughMoneyForPurchase = !_.isNil(userBalance) && !_.isNil(streamingCost) && Number(userBalance) >= Number(streamingCost);
+    const requiredFieldsFilled = (streamUrl) && !_.isNil(minutes) && !_.isNil(fbAccounts)
+
+    useEffect(() => {
+        streamingStore.checkStreamingCost({ token: user.token, streamerCount: Number(fbAccounts), streamTime: Number(minutes) }).then(response => {
+            if (response.error) {
+                setStreamingCost(null);
+                setUserBalance(null);
+                setAvailableStreamers(null);
+            } else {
+                setStreamingCost(response.data.cost);
+                setUserBalance(response.data.balance);
+                setAvailableStreamers(response.data.available_streamers);
+            }
+        })
+        // eslint-disable-next-line
+    }, [fbAccounts, minutes]);
 
     const handleSubmitForm = () => {
         if (minutes < 1 || !_.isInteger(minutes)) return alert('Minutes should be an integer larger than 0.');
@@ -13,7 +46,23 @@ const StreamingForm = () => {
 
         if (!validator.isURL(streamUrl)) return alert('Stream url should be a valid URL.');
 
-        // TODO: STREAM LINK
+        streamingStore.streamLink({ token: user.token, streamerCount: fbAccounts, streamTime: minutes, streamUrl }).then(response => {
+            if (response.error) {
+                return Swal.fire({
+                    title: 'Unauthorized',
+                    text: (response.data && response.data.message) || 'Internal server error. Please try again later.',
+                    icon: 'error'
+                });
+            }
+
+            // TODO: UPDATE BALANCE AND ALL THAT. MAYBE REFRESH FRONT-END
+
+            Swal.fire({
+                title: 'Success',
+                text: (response.data && response.data.message) || 'Streaming started successfully!',
+                icon: 'success'
+            });
+        })
     }
 
 
@@ -25,7 +74,7 @@ const StreamingForm = () => {
 
     useEffect(() => {
         if (!_.isInteger(fbAccounts))
-            setMinutes(Math.floor(fbAccounts))
+            setFbAccounts(Math.floor(fbAccounts))
         if (fbAccounts < 1) setFbAccounts(1);
     }, [fbAccounts])
 
@@ -38,18 +87,45 @@ const StreamingForm = () => {
                 <div className="card-body">
                     <div>
                         <div className="form-group">
-                            <label htmlFor="streamingFormMinutes">Number of minutes</label>
+                            <label htmlFor="streamingFormMinutes">Number of minutes *</label>
                             <input value={minutes} pattern="\d*" step="1" onChange={evt => setMinutes(evt.target.value)} min={1} type="number" className="form-control" id="streamingFormMinutes" />
                         </div>
                         <div className="form-group">
-                            <label htmlFor="streamingFormAccounts">Number of Facebook accounts</label>
+                            <label htmlFor="streamingFormAccounts">Number of Facebook accounts *</label>
                             <input value={fbAccounts} pattern="\d*" step="1" onChange={evt => setFbAccounts(evt.target.value)} min={1} type="number" className="form-control" id="streamingFormAccounts" />
                         </div>
                         <div className="form-group">
-                            <label htmlFor="streamingFormStreamUrl">Link to stream</label>
+                            <label htmlFor="streamingFormStreamUrl">Link to stream *</label>
                             <input value={streamUrl} onChange={evt => setStreamUrl(evt.target.value)} className="form-control" id="streamingFormStreamUrl" />
                         </div>
-                        <button className="btn btn-lg btn-primary btn-block" onClick={handleSubmitForm}>Submit</button>
+                        {!_.isNil(streamingCost) && !_.isNil(userBalance) && !loadingCheckStreamingCost ? (
+                            <div>
+                                <p>Cost: <span className="text-info">{streamingCost}</span></p>
+                                <p>Your balance: <span className="text-success">{userBalance}</span></p>
+                                {/* {enoughMoneyForPurchase ?
+                                    <p>Balance after purchase: <span className="text-info">{userBalance - streamingCost}</span></p>
+                                    : null} */}
+                                {enoughMoneyForPurchase ?
+                                    <p className="text-success">You have enough balance to do this purchase.</p> : (
+                                        <p className="text-danger">Not enough balance for this purchase.</p>
+                                    )}
+                            </div>
+                        ) : null}
+                        {loadingCheckStreamingCost && (
+                            <div className="card mb-3">
+                                <div className="card-body text-center p-2 ">
+                                    <div className="spinner-border" role="status">
+                                        <span className="sr-only">Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {!loadingCheckStreamingCost && (_.isNil(streamingCost) || _.isNil(userBalance)) && (
+                            <p className="text-danger">There was a problem estimating streaming price. Please change the values above.</p>
+                        )}
+
+                        <button className="btn btn-lg btn-primary btn-block" onClick={handleSubmitForm} disabled={loadingStreamLink || loadingCheckStreamingCost || loadingGetStreamingBotsAvailable || !enoughMoneyForPurchase || !requiredFieldsFilled}>Submit</button>
                     </div>
                 </div>
             </div>
@@ -57,4 +133,4 @@ const StreamingForm = () => {
     );
 }
 
-export default StreamingForm;
+export default observer(StreamingForm);

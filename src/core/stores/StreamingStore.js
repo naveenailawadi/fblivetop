@@ -26,10 +26,10 @@ class StreamingStore {
         this.data[key] = value;
     };
 
-    checkStreamingCost = async ({ token }) => {
+    checkStreamingCost = async ({ token, streamerCount, streamTime }) => {
         this.loaders.checkStreamingCost = true;
 
-        const response = await StreamingAPI.checkStreamingCost({ token }).finally(
+        const response = await StreamingAPI.checkStreamingCost({ token, streamerCount, streamTime }).finally(
             () => {
                 this.loaders.checkStreamingCost = false;
             }
@@ -50,10 +50,10 @@ class StreamingStore {
         return response;
     };
 
-    streamLink = async ({ token }) => {
+    streamLink = async ({ token, streamerCount, streamTime, streamUrl }) => {
         this.loaders.streamLink = true;
 
-        const response = await StreamingAPI.streamLink({ token }).finally(
+        const response = await StreamingAPI.streamLink({ token, streamerCount, streamTime, streamUrl }).finally(
             () => {
                 this.loaders.streamLink = false;
             }

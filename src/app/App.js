@@ -56,6 +56,11 @@ const App = (props) => {
             path={Routes.home.url}
             render={() => <Redirect to={Routes.signIn.url} />}
           />
+          <Route
+            exact
+            path={Routes.adminPanel.url}
+            render={() => <Redirect to={Routes.signIn.url} />}
+          />
           <Route component={NotFound} />
         </Switch>
       </Suspense>
