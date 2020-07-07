@@ -20,7 +20,7 @@ import NotFound from './pages/NotFound';
 const App = (props) => {
   const { t } = props;
   const dataStore = useContext(DataStoreContext);
-  const { authenticationStore } = dataStore;
+  const { authenticationStore, adminStore } = dataStore;
   const { isAuthenticated } = authenticationStore;
 
   const [initialized, setInitialized] = useState(false);
@@ -30,8 +30,10 @@ const App = (props) => {
     const userCookie = getCookie("user");
     const adminTokenCookie = getCookie("adminToken");
 
+    const userObj = JSON.parse(userCookie);
+
     if (userCookie) {
-      authenticationStore.setValueByKey('user', JSON.parse(userCookie));
+      authenticationStore.setValueByKey('user', userObj);
     }
 
     if (adminTokenCookie) {

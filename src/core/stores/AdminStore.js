@@ -13,6 +13,7 @@ class AdminStore {
     data = {
         allUsers: null,
         allStreamers: null,
+        allFloatConstants: null,
     };
 
     // Loaders
@@ -20,6 +21,7 @@ class AdminStore {
         getAllUsers: false,
         deleteUser: false,
         getAllStreamers: false,
+        getAllFloatConstants: false,
     };
 
     // Actions
@@ -77,6 +79,23 @@ class AdminStore {
         return response;
     };
 
+    getAllFloatConstants = async ({ token }) => {
+        this.loaders.getAllFloatConstants = true;
+
+        const response = await AdminAPI.getAllFloatConstants({ token }).finally(
+            () => {
+                this.loaders.getAllFloatConstants = false;
+            }
+        );
+
+        if (response.success && response.data) {
+            const allFloatConstants = response.data.constants;
+            this.setValueByKey('allFloatConstants', allFloatConstants);
+        }
+
+        return response;
+    };
+
     deleteUser = async ({ token, userEmail }) => {
         this.loaders.deleteUser = true;
 
@@ -106,6 +125,18 @@ class AdminStore {
         return response;
     };
 
+    setFloatConstantValue = async ({ token, name, newConstantValue }) => {
+        this.loaders.setFloatConstantValue = true;
+
+        const response = await AdminAPI.setFloatConstantValue({ token, name, newConstantValue }).finally(
+            () => {
+                this.loaders.setFloatConstantValue = false;
+            }
+        );
+
+        return response;
+    };
+
     addStreamer = async ({ token, email, emailPassword, port, host, proxyUsername, proxyPassword }) => {
         this.loaders.addStreamer = true;
 
@@ -118,7 +149,7 @@ class AdminStore {
         return response;
     };
 
-    
+
 }
 
 decorate(AdminStore, {
@@ -129,6 +160,9 @@ decorate(AdminStore, {
     deleteUser: action,
     getAllStreamers: action,
     updateUserInUsersList: action,
+    getAllFloatConstants: action,
+    setFloatConstantValue: action,
+    setUserBalance: action,
 });
 
 export default AdminStore;

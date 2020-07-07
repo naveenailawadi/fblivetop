@@ -12,6 +12,7 @@ import CSVReader from 'react-csv-reader';
 const tabs = {
     Users: 'Users',
     Streamers: 'Streamers',
+    FloatConstants: 'FloatConstants',
 };
 
 const AdminPanel = (props) => {
@@ -21,11 +22,14 @@ const AdminPanel = (props) => {
 
     const [usersEmailFilter, setUsersEmailFilter] = useState('')
     const [usersList, setUsersList] = useState(null);
-    const [initialized, setInitialized] = useState(true);
+    const [initialized, setInitialized] = useState(false);
     const [currentTab, setCurrentTab] = useState(tabs.Users)
 
     const [streamersEmailFilter, setStreamersEmailFilter] = useState('')
     const [streamersList, setStreamersList] = useState(null);
+
+    const [constantsNameFilter, setConstantsNameFilter] = useState('')
+    const [constantsList, setConstantsList] = useState(null);
 
     const [uploadingStreamers, setUploadingStreamers] = useState(false);
     const [uploadStreamersCsv, setUploadStreamersCsv] = useState(null);
@@ -34,24 +38,34 @@ const AdminPanel = (props) => {
     const loadingDeleteUser = adminStore.loaders.deleteUser;
 
     const loadingStreamersList = adminStore.loaders.getAllStreamers;
+    const loadingConstantsList = adminStore.loaders.getAllFloatConstants;
 
     const filteredUsersList = usersEmailFilter ? usersList && usersList.filter(i => i.email.includes(usersEmailFilter)) : usersList;
     const filteredStreamersList = streamersEmailFilter ? streamersList && streamersList.filter(i => i.email.includes(streamersEmailFilter)) : streamersList;
+    const filteredConstantsList = constantsNameFilter ? constantsList && constantsList.filter(i => i.name.includes(constantsNameFilter)) : constantsList;
 
     useEffect(() => {
         // FETCH USERS LIST ON INIT. IF RESPONSE IS ERROR, MEANS THAT USER IS NOT ADMIN. REDIRECT TO ROOT.
         if (!user) return props.history.push(Routes.home.url);
 
-        // adminStore.getAllUsers({ token: adminToken }).then(response => {
-        //     if (response.success && response.data) {
-        //         setUsersList(response.data.users);
-        //         setInitialized(true);
-        //     } else {
-        //         // Case user is not admin
-        //         return props.history.push(Routes.home.url);
-        //     }
-        // });
-    }, [adminStore, adminToken, authenticationStore.data, props.history, user]);
+        if (user.email && user.password) {
+            authenticationStore.adminLogIn({ email: user.email, password: user.password }).then((response) => {
+                if (response.error) {
+                    Swal.fire({
+                        title: 'Unauthorized',
+                        text: 'You need admin permissions to do that.',
+                        icon: 'error'
+                    });
+                    return props.history.push(Routes.home.url);
+                }
+                else {
+                    setInitialized(true);
+                }
+            })
+        }
+
+        // eslint-disable-next-line
+    }, []);
 
     // Reset all values on tab change
     useEffect(() => {
@@ -63,6 +77,9 @@ const AdminPanel = (props) => {
                 break;
             case tabs.Streamers:
                 handleFetchStreamersList();
+                break;
+            case tabs.FloatConstants:
+                handleFetchFloatConstantsList();
                 break;
             default:
                 break;
@@ -97,7 +114,24 @@ const AdminPanel = (props) => {
                 if (cb)
                     cb();
             } else {
-                // TODO: RENEW ADMIN TOKEN IN CASE THERE IS ONE AND TRY.
+                // Case user is not admin
+                Swal.fire({
+                    title: 'Unauthorized',
+                    text: 'You need admin permissions to do that.',
+                    icon: 'error'
+                });
+                return props.history.push(Routes.home.url);
+            }
+        });
+    }
+
+    const handleFetchFloatConstantsList = (cb) => {
+        adminStore.getAllFloatConstants({ token: adminToken }).then(response => {
+            if (response.success && response.data) {
+                setConstantsList(response.data.constants);
+                if (cb)
+                    cb();
+            } else {
                 // Case user is not admin
                 Swal.fire({
                     title: 'Unauthorized',
@@ -112,8 +146,11 @@ const AdminPanel = (props) => {
     const resetAllValues = () => {
         setUsersEmailFilter('');
         setStreamersEmailFilter('');
+        setConstantsNameFilter('');
+
         setUsersList(null);
         setStreamersList(null);
+        setConstantsList(null);
     }
 
     const handleDeleteUser = (email) => {
@@ -166,6 +203,22 @@ const AdminPanel = (props) => {
         setUsersList(newUsersList)
     }
 
+    const updateConstantInConstantsList = (name, newValues) => {
+        if (!constantsList) return;
+
+        const constantIndex = constantsList.findIndex(i => i.name === name);
+
+        if (constantIndex === -1) return;
+
+        const constantObj = constantsList[constantIndex];
+        const newConstantObj = { ...constantObj, ...newValues };
+
+        const newConstantsList = [...constantsList];
+        newConstantsList[constantIndex] = newConstantObj;
+
+        setConstantsList(newConstantsList);
+    }
+
     const handleAddBalance = (user) => {
         Swal.fire({
             title: 'Balance',
@@ -201,6 +254,45 @@ const AdminPanel = (props) => {
                     Swal.fire(
                         'Success',
                         response.data.message || `${user.email} now has a ${amount} balance`,
+                        'success'
+                    )
+                })
+            }
+        })
+    }
+
+    const handleEditConstant = (constant) => {
+        Swal.fire({
+            title: `Edit constant ${constant.name}`,
+            input: 'number',
+            inputValue: constant.constant,
+            text: 'Set value',
+            inputAttributes: {
+                min: 0,
+                step: 0.01,
+                defaultValue: constant.constant,
+            },
+        }).then(function (result) {
+            if (result.value) {
+                const amount = result.value
+
+                Swal.showLoading();
+
+                // Set balance request
+                adminStore.setFloatConstantValue({ token: adminToken, name: constant.name, newConstantValue: amount }).then(response => {
+                    if (response.error) {
+                        return Swal.fire(
+                            'Error',
+                            `There was an error setting float constant value.`,
+                            'error'
+                        )
+                    }
+
+                    updateConstantInConstantsList(constant.name, { constant: amount });
+
+                    Swal.fire(
+                        'Success',
+                        response.data.message || `Constant ${constant.name} value is now ${amount}.`,
                         'success'
                     )
                 })
@@ -398,12 +490,60 @@ const AdminPanel = (props) => {
         </div>
     )
 
+    const floatConstantsTab = (
+        <div>
+            <div className="form-group">
+                <label className="font-weight-bold text-dark">Filter by name:</label>
+                <div className="input-group">
+                    <input
+                        className="form-control"
+                        onChange={evt => setConstantsNameFilter(evt.target.value)}
+                        value={constantsNameFilter}
+                    />
+
+                </div>
+            </div>
+
+            <table className="table table-striped">
+                <thead>
+                    <tr>
+                        {/* <th scope="col">#</th> */}
+                        <th scope="col">Name</th>
+                        <th scope="col">Constant</th>
+                        <th scope="col">Update Date</th>
+                        <th scope="col">Edit</th>
+                    </tr>
+                </thead>
+                <tbody className="table-bordered">
+                    {filteredConstantsList && filteredConstantsList.map(i => <tr key={i.email}>
+                        <td>{i.name}</td>
+                        <td>{i.constant}</td>
+                        <td>{moment.unix(i.update_date).format('lll')}</td>
+                        <td><button className="btn btn-info" onClick={() => handleEditConstant(i)}><i className="fa fa-edit"></i></button></td>
+                    </tr>)}
+                </tbody>
+            </table>
+            {(!loadingConstantsList && (!filteredConstantsList || filteredConstantsList.length === 0)) ? <p>No float constants found.</p> : null}
+            {loadingConstantsList && (
+                <div className="card mb-3">
+                    <div className="card-body text-center p-2 ">
+                        <div className="spinner-border" role="status">
+                            <span className="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    )
+
     const renderCurrentTab = () => {
         switch (currentTab) {
             case tabs.Users:
                 return usersTab;
             case tabs.Streamers:
                 return streamersTab;
+            case tabs.FloatConstants:
+                return floatConstantsTab;
             default:
                 return;
         }

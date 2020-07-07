@@ -8,13 +8,12 @@ const StreamingForm = () => {
     const [streamUrl, setStreamUrl] = useState('');
 
     const handleSubmitForm = () => {
-        // TODO: VALIDATE STREAM URL
         if (minutes < 1 || !_.isInteger(minutes)) return alert('Minutes should be an integer larger than 0.');
         if (fbAccounts < 1 || !_.isInteger(fbAccounts)) return alert('Facebook accounts should be an integer larger than 0.')
 
         if (!validator.isURL(streamUrl)) return alert('Stream url should be a valid URL.');
 
-
+        // TODO: STREAM LINK
     }
 
 

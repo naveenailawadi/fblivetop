@@ -21,6 +21,26 @@ export const getAllStreamers = async ({ token }) => {
     }
 };
 
+export const getAllFloatConstants = async ({ token }) => {
+    try {
+        const res = await client({ headers: { token } }).get('/FloatConstants');
+        return processResponse(res);
+    } catch (err) {
+        console.error(err);
+        return processErrorResponse(err);
+    }
+};
+
+export const setFloatConstantValue = async ({ token, name, newConstantValue }) => {
+    try {
+        const res = await client({ headers: { token } }).put('/FloatConstants', { token, name, newConstantValue });
+        return processResponse(res);
+    } catch (err) {
+        console.error(err);
+        return processErrorResponse(err);
+    }
+};
+
 export const deleteUser = async ({ token, userEmail }) => {
     try {
         const res = await client().delete('/AdminUserManagement', { data: { token, user_email: userEmail } });
