@@ -288,7 +288,7 @@ const AdminPanel = (props) => {
                         )
                     }
 
-                    updateConstantInConstantsList(constant.name, { constant: amount });
+                    updateConstantInConstantsList(constant.name, { constant: amount, update_date: moment().unix() });
 
                     Swal.fire(
                         'Success',
