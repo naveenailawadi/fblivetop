@@ -17,7 +17,6 @@ class StreamingStore {
     // Loaders
     loaders = {
         checkStreamingCost: false,
-        getStreamingBotsAvailable: false,
         streamLink: false,
     };
 
@@ -32,18 +31,6 @@ class StreamingStore {
         const response = await StreamingAPI.checkStreamingCost({ token, streamerCount, streamTime }).finally(
             () => {
                 this.loaders.checkStreamingCost = false;
-            }
-        );
-
-        return response;
-    };
-
-    getStreamingBotsAvailable = async ({ token }) => {
-        this.loaders.getStreamingBotsAvailable = true;
-
-        const response = await StreamingAPI.getStreamingBotsAvailable({ token }).finally(
-            () => {
-                this.loaders.getStreamingBotsAvailable = false;
             }
         );
 
@@ -68,7 +55,6 @@ decorate(StreamingStore, {
     loaders: observable,
     setValueByKey: action,
     checkStreamingCost: action,
-    getStreamingBotsAvailable: action,
     streamLink: action,
 });
 

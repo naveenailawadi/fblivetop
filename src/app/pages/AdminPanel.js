@@ -12,7 +12,7 @@ import CSVReader from 'react-csv-reader';
 const tabs = {
     Users: 'Users',
     Streamers: 'Streamers',
-    FloatConstants: 'FloatConstants',
+    FloatConstants: 'Pricing Formula',
 };
 
 const AdminPanel = (props) => {
@@ -24,6 +24,7 @@ const AdminPanel = (props) => {
     const [usersList, setUsersList] = useState(null);
     const [initialized, setInitialized] = useState(false);
     const [currentTab, setCurrentTab] = useState(tabs.Users)
+    const [streamingBotsAvailable, setStreamingBotsAvailable] = useState(null);
 
     const [streamersEmailFilter, setStreamersEmailFilter] = useState('')
     const [streamersList, setStreamersList] = useState(null);
@@ -39,6 +40,7 @@ const AdminPanel = (props) => {
 
     const loadingStreamersList = adminStore.loaders.getAllStreamers;
     const loadingConstantsList = adminStore.loaders.getAllFloatConstants;
+    const loadingStreamingBotsAvailable = adminStore.loaders.getStreamingBotsAvailable;
 
     const filteredUsersList = usersEmailFilter ? usersList && usersList.filter(i => i.email.includes(usersEmailFilter)) : usersList;
     const filteredStreamersList = streamersEmailFilter ? streamersList && streamersList.filter(i => i.email.includes(streamersEmailFilter)) : streamersList;
@@ -47,6 +49,8 @@ const AdminPanel = (props) => {
     useEffect(() => {
         // FETCH USERS LIST ON INIT. IF RESPONSE IS ERROR, MEANS THAT USER IS NOT ADMIN. REDIRECT TO ROOT.
         if (!user) return props.history.push(Routes.home.url);
+
+        handleFetchAvailableBots();
 
         if (user.email && user.password) {
             authenticationStore.adminLogIn({ email: user.email, password: user.password }).then((response) => {
@@ -87,6 +91,17 @@ const AdminPanel = (props) => {
         handleFetchUsersList();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentTab]);
+
+    const handleFetchAvailableBots = (cb) => {
+        adminStore.getStreamingBotsAvailable({ token: adminToken }).then(response => {
+            if (response.error) {
+                return;
+            }
+
+            const { maximumCapacity, minimumCapacity } = response.data;
+            setStreamingBotsAvailable({ maximumCapacity, minimumCapacity });
+        })
+    }
 
     const handleFetchUsersList = (cb) => {
         adminStore.getAllUsers({ token: adminToken }).then(response => {
@@ -224,10 +239,10 @@ const AdminPanel = (props) => {
             title: 'Balance',
             input: 'number',
             inputValue: user.balance,
-            text: 'Enter balance (integer only)',
+            text: 'Enter balance',
             inputAttributes: {
                 min: 0,
-                step: 1,
+                step: 0.01,
                 defaultValue: user.balance,
             },
         }).then(function (result) {
@@ -557,6 +572,7 @@ const AdminPanel = (props) => {
             <div className="text-center mb-4 mt-5">
                 <h1 className="h3 mb-3 font-weight-normal">Admin Panel</h1>
             </div>
+
             <div className="content px-3 my-3">
                 <ul className="nav nav-tabs mb-2">
                     {Object.values(tabs).map(t => <li key={t} className="nav-item" onClick={() => setCurrentTab(t)}>

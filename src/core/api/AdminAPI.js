@@ -71,3 +71,12 @@ export const addStreamer = async ({ token, email, emailPassword, port, host, pro
     }
 };
 
+export const getStreamingBotsAvailable = async ({ token }) => {
+    try {
+        const res = await client({ headers: { token } }).get('/Streaming');
+        return processResponse(res);
+    } catch (err) {
+        console.error(err);
+        return processErrorResponse(err);
+    }
+};

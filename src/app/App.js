@@ -25,7 +25,8 @@ const App = (props) => {
 
   const [initialized, setInitialized] = useState(false);
 
-  useEffect(() => {
+
+  const init = async () => {
     // Check if there is a stored user
     const userCookie = getCookie("user");
     const adminTokenCookie = getCookie("adminToken");
@@ -34,6 +35,8 @@ const App = (props) => {
 
     if (userCookie) {
       authenticationStore.setValueByKey('user', userObj);
+
+      await authenticationStore.logIn({ email: userObj.email, password: userObj.password });
     }
 
     if (adminTokenCookie) {
@@ -41,7 +44,14 @@ const App = (props) => {
     }
 
     setInitialized(true);
-  }, [authenticationStore]);
+
+  }
+
+  useEffect(() => {
+    init();
+
+    // eslint-disable-next-line
+  }, []);
 
   if (!initialized) return <LoadingScreen />
 

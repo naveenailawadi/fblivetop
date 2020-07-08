@@ -22,6 +22,7 @@ class AdminStore {
         deleteUser: false,
         getAllStreamers: false,
         getAllFloatConstants: false,
+        getStreamingBotsAvailable: false,
     };
 
     // Actions
@@ -149,6 +150,18 @@ class AdminStore {
         return response;
     };
 
+    getStreamingBotsAvailable = async ({ token }) => {
+        this.loaders.getStreamingBotsAvailable = true;
+
+        const response = await AdminAPI.getStreamingBotsAvailable({ token }).finally(
+            () => {
+                this.loaders.getStreamingBotsAvailable = false;
+            }
+        );
+
+        return response;
+    };
+
 
 }
 
@@ -163,6 +176,7 @@ decorate(AdminStore, {
     getAllFloatConstants: action,
     setFloatConstantValue: action,
     setUserBalance: action,
+    getStreamingBotsAvailable: action
 });
 
 export default AdminStore;
