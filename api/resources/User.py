@@ -107,15 +107,18 @@ class LoginResource(Resource):
         validated, user, code = validate_user(email, password)
 
         if validated:
+            give_token = True
             output = {'status': 'success', 'loggedIn': True}
         else:
+            give_token = False
             user['loggedIn'] = False
             output = user
-            return output
 
-        # add a token to the output
-        token = jwt.encode({'id': user.id, 'exp': dt.utcnow() + timedelta(minutes=TOKEN_MINUTES)}, app.config['SECRET_KEY'])
-        output['token'] = token.decode('UTF-8')
+        # add a token to the output (if applicable)
+        if give_token:
+            token = jwt.encode({'id': user.id, 'exp': dt.utcnow(
+            ) + timedelta(minutes=TOKEN_MINUTES)}, app.config.get('SECRET_KEY'))
+            output['token'] = token.decode('UTF-8')
 
         return output, code
 
