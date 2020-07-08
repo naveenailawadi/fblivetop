@@ -4,8 +4,9 @@ import validator from 'validator';
 import { DataStoreContext } from '../../core/stores/DataStore';
 import { observer } from 'mobx-react-lite';
 import Swal from 'sweetalert2';
+import Routes from '../constants/Routes';
 
-const StreamingForm = () => {
+const StreamingForm = (props) => {
     const dataStore = useContext(DataStoreContext);
     const { streamingStore, authenticationStore } = dataStore;
 
@@ -55,12 +56,13 @@ const StreamingForm = () => {
                 });
             }
 
-            // TODO: UPDATE BALANCE AND ALL THAT. MAYBE REFRESH FRONT-END
-
             Swal.fire({
                 title: 'Success',
                 text: (response.data && response.data.message) || 'Streaming started successfully!',
-                icon: 'success'
+                icon: 'success',
+                timer: 2000,
+            }).then(result => {
+                window.location.reload();
             });
         })
     }
