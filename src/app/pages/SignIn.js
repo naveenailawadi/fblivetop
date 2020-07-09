@@ -5,8 +5,11 @@ import { handlePressEnter, isValidEmail } from '../AppHelper';
 import { DataStoreContext } from '../../core/stores/DataStore';
 import { observer } from 'mobx-react-lite';
 import Swal from 'sweetalert2';
+import translationKeys from '../../core/localization/translations/translationKeys.json';
+import { withTranslation } from 'react-i18next';
 
 const SignIn = (props) => {
+    const {t} = props;
     const dataStore = useContext(DataStoreContext);
     const { authenticationStore } = dataStore;
 
@@ -18,21 +21,21 @@ const SignIn = (props) => {
     const loadingAdminLogIn = authenticationStore.loaders.adminLogIn;
 
     const handleSubmit = () => {
-        if (!email || !password) return alert('One or more required fields are missing.');
-        if (!isValidEmail(email)) return alert('Email is not valid.');
+        if (!email || !password) return alert(t(translationKeys.validationErrorFieldsMissing));
+        if (!isValidEmail(email)) return alert(t(translationKeys.validationErrorEmail));
 
         authenticationStore.adminLogIn({ email, password, remember }).then(adminResponse => {
             authenticationStore.logIn({ email, password, remember }).then(response => {
                 if (response.error) {
-                    return alert('There was an error logging in. Please try again later.')
+                    return alert(t(translationKeys.errorLogIn))
                 }
 
                 props.history.push(Routes.home.url);
 
                 Swal.fire({
                     type: 'success',
-                    title: `Welcome back!`,
-                    text: 'Logged in successfully.',
+                    title: t(translationKeys.welcomeBack),
+                    text: t(translationKeys.loggedInSuccessfully),
                     icon: 'success',
                     showConfirmButton: false,
                     timer: 1500,
@@ -46,13 +49,13 @@ const SignIn = (props) => {
     return (
         <div className="container-sm" style={{ maxWidth: '760px' }}>
             <div className="text-center mb-4 mt-5">
-                <h1 className="h3 mb-3 font-weight-normal">Log In</h1>
+                <h1 className="h3 mb-3 font-weight-normal">{t(translationKeys.logIn)}</h1>
             </div>
             <div className="card">
                 <div className="card-body">
                     <div>
                         <div className="form-group">
-                            <label htmlFor="signInEmail">Email</label>
+                            <label htmlFor="signInEmail">{t(translationKeys.email)}</label>
                             <input value={email}
                                 type="email"
                                 className="form-control"
@@ -63,7 +66,7 @@ const SignIn = (props) => {
                                 } />
                         </div>
                         <div className="form-group">
-                            <label htmlFor="signInPassword">Password</label>
+                            <label htmlFor="signInPassword">{t(translationKeys.password)}</label>
                             <input
                                 type="password"
                                 className="form-control"
@@ -76,11 +79,11 @@ const SignIn = (props) => {
                         </div>
                         <div className="form-group form-check">
                             <input type="checkbox" className="form-check-input" id="signInRememebr" value={remember} onChange={() => setRemember(!remember)} />
-                            <label className="form-check-label" htmlFor="signInRememebr">Remember me</label>
+                            <label className="form-check-label" htmlFor="signInRememebr">{t(translationKeys.rememberMe)}</label>
                         </div>
-                        <button className="btn btn-lg btn-primary btn-block" onClick={handleSubmit} disabled={loadingLogIn || loadingAdminLogIn}>Submit</button>
+                        <button className="btn btn-lg btn-primary btn-block" onClick={handleSubmit} disabled={loadingLogIn || loadingAdminLogIn}>{t(translationKeys.sumbit)}</button>
                         <div className="d-flex justify-content-between mt-2">
-                            <span>Don't have an account? <Link to={Routes.signUp.url}>Register</Link></span>
+                            <span>{t(translationKeys.dontHaveAnAccountQuestion)} <Link to={Routes.signUp.url}>{t(translationKeys.register)}</Link></span>
                             {/* <a href="#">Forgot Password?</a> */}
                         </div>
                     </div>
@@ -90,4 +93,4 @@ const SignIn = (props) => {
     );
 }
 
-export default withRouter(observer(SignIn));
+export default withTranslation()(withRouter(observer(SignIn))) ;

@@ -4,9 +4,11 @@ import Routes from '../constants/Routes';
 import { getCurrentRoute } from '../appUtils'
 import { DataStoreContext } from '../../core/stores/DataStore'
 import { languagesKeys, languagesNames } from '../../core/constants/enums/languagesEnum';
+import { withTranslation } from 'react-i18next';
+import translationKeys from '../../core/localization/translations/translationKeys.json';
 
 const Header = (props) => {
-    const { location } = props;
+    const { location, t } = props;
     const dataStore = useContext(DataStoreContext);
     const { authenticationStore, appStore } = dataStore;
     const { isAuthenticated, logOut } = authenticationStore;
@@ -46,15 +48,15 @@ const Header = (props) => {
                     <ul className="navbar-nav navbar-right">
                         {isAuthenticated ? (
                             <li className="nav-item">
-                                <a href="#" className={`nav-link`} onClick={handleLogOut}>Log Out</a>
+                                <a href="#" className={`nav-link`} onClick={handleLogOut}>{t(translationKeys.logOut)}</a>
                             </li>
                         ) : (
                                 <>
                                     <li className="nav-item">
-                                        <Link to={Routes.signIn.url} className={`nav-link ${currentRoute === Routes.signIn ? 'active' : ''}`}>Log In</Link>
+                                        <Link to={Routes.signIn.url} className={`nav-link ${currentRoute === Routes.signIn ? 'active' : ''}`}>{t(translationKeys.logIn)}</Link>
                                     </li>
                                     <li className="nav-item">
-                                        <Link to={Routes.signUp.url} className={`nav-link ${currentRoute === Routes.signUp ? 'active' : ''}`}>Register</Link>
+                                        <Link to={Routes.signUp.url} className={`nav-link ${currentRoute === Routes.signUp ? 'active' : ''}`}>{t(translationKeys.register)}</Link>
                                     </li>
                                 </>
                             )}
@@ -65,4 +67,4 @@ const Header = (props) => {
     );
 }
 
-export default withRouter(Header);
+export default withTranslation()(withRouter(Header));

@@ -8,14 +8,19 @@ import Swal from 'sweetalert2';
 import LoadingScreen from '../components/LoadingScreen';
 import moment from 'moment';
 import CSVReader from 'react-csv-reader';
+import translationKeys from '../../core/localization/translations/translationKeys.json';
+import { withTranslation } from 'react-i18next';
+
 
 const tabs = {
-    Users: 'Users',
-    Streamers: 'Streamers',
-    FloatConstants: 'Pricing Formula',
+    Users: translationKeys.users,
+    Streamers: translationKeys.streamers,
+    FloatConstants: translationKeys.pricingFormula,
 };
 
 const AdminPanel = (props) => {
+    const { t } = props;  
+
     const dataStore = useContext(DataStoreContext);
     const { adminStore, authenticationStore } = dataStore;
     const { data: { user, adminToken } } = authenticationStore;
@@ -56,8 +61,8 @@ const AdminPanel = (props) => {
             authenticationStore.adminLogIn({ email: user.email, password: user.password }).then((response) => {
                 if (response.error) {
                     Swal.fire({
-                        title: 'Unauthorized',
-                        text: 'You need admin permissions to do that.',
+                        title: t(translationKeys.unauthorized),
+                        text: t(translationKeys.validationErrorAdmin),
                         icon: 'error'
                     });
                     return props.history.push(Routes.home.url);
@@ -115,8 +120,8 @@ const AdminPanel = (props) => {
                 // TODO: RENEW ADMIN TOKEN IN CASE THERE IS ONE AND TRY.
                 // Case user is not admin
                 Swal.fire({
-                    title: 'Unauthorized',
-                    text: 'You need admin permissions to do that.',
+                    title: t(translationKeys.unauthorized),
+                    text: t(translationKeys.validationErrorAdmin),
                     icon: 'error'
                 });
                 return props.history.push(Routes.home.url);
@@ -133,8 +138,8 @@ const AdminPanel = (props) => {
             } else {
                 // Case user is not admin
                 Swal.fire({
-                    title: 'Unauthorized',
-                    text: 'You need admin permissions to do that.',
+                    title: t(translationKeys.unauthorized),
+                    text: t(translationKeys.validationErrorAdmin),
                     icon: 'error'
                 });
                 return props.history.push(Routes.home.url);
@@ -151,8 +156,8 @@ const AdminPanel = (props) => {
             } else {
                 // Case user is not admin
                 Swal.fire({
-                    title: 'Unauthorized',
-                    text: 'You need admin permissions to do that.',
+                    title: t(translationKeys.unauthorized),
+                    text: t(translationKeys.validationErrorAdmin),
                     icon: 'error'
                 });
                 return props.history.push(Routes.home.url);
@@ -172,20 +177,20 @@ const AdminPanel = (props) => {
 
     const handleDeleteUser = (email) => {
         Swal.fire({
-            title: 'Are you sure you want to delete it?',
-            text: `User email: ${email}`,
+            title: t(translationKeys.youSureDeleteQuestion),
+            text: `${t(translationKeys.userEmail)}: ${email}`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it'
+            confirmButtonText: t(translationKeys.yesDelete)
         }).then((result) => {
             if (result.value) {
                 adminStore.deleteUser({ token: adminToken, userEmail: email }).then(response => {
                     if (response.error) {
                         return Swal.fire(
-                            'Error',
-                            `There was an error deleting user.`,
+                            t(translationKeys.error),
+                            t(translationKeys.errorDeletingUser),
                             'error'
                         )
                     }
@@ -194,8 +199,8 @@ const AdminPanel = (props) => {
                     setUsersList(newUsersList);
 
                     Swal.fire(
-                        'Deleted!',
-                        `User with email ${email} has been deleted.`,
+                        t(translationKeys.deleted),
+                        t(translationKeys.userWithEmailDeleted, { email }),
                         'success'
                     )
                 })
@@ -238,10 +243,10 @@ const AdminPanel = (props) => {
 
     const handleAddBalance = (user) => {
         Swal.fire({
-            title: 'Balance',
+            title: t(translationKeys.balance),
             input: 'number',
             inputValue: user.balance,
-            text: 'Enter balance',
+            text: t(translationKeys.enterBalance),
             inputAttributes: {
                 min: 0,
                 step: 0.01,
@@ -251,7 +256,7 @@ const AdminPanel = (props) => {
             if (result.value) {
                 const amount = result.value
                 if (amount < 0) {
-                    return Swal.fire('Error', 'Balance cannot be lower than 0', 'error');
+                    return Swal.fire(t(translationKeys.error), t(translationKeys.validationErrorBalance), 'error');
                 }
 
                 Swal.showLoading();
@@ -260,8 +265,8 @@ const AdminPanel = (props) => {
                 adminStore.setUserBalance({ token: adminToken, userEmail: user.email, balance: amount }).then(response => {
                     if (response.error) {
                         return Swal.fire(
-                            'Error',
-                            `There was an error setting user balance.`,
+                            t(translationKeys.error),
+                            t(translationKeys.errorSetUserBalance),
                             'error'
                         )
                     }
@@ -269,8 +274,8 @@ const AdminPanel = (props) => {
                     updateUserInUsersList(user.email, { balance: amount })
 
                     Swal.fire(
-                        'Success',
-                        response.data.message || `${user.email} now has a ${amount} balance`,
+                        t(translationKeys.success),
+                        response.data.message || t(translationKeys.userNowHasBalance, { email: user.email, amount }),
                         'success'
                     )
                 })
@@ -280,10 +285,10 @@ const AdminPanel = (props) => {
 
     const handleEditConstant = (constant) => {
         Swal.fire({
-            title: `Edit constant ${constant.name}`,
+            title: t(translationKeys.editConstant, { name: constant.name }),
             input: 'number',
             inputValue: constant.constant,
-            text: 'Set value',
+            text: t(translationKeys.setValue),
             inputAttributes: {
                 min: 0,
                 step: 0.01,
@@ -299,8 +304,8 @@ const AdminPanel = (props) => {
                 adminStore.setFloatConstantValue({ token: adminToken, name: constant.name, newConstantValue: amount }).then(response => {
                     if (response.error) {
                         return Swal.fire(
-                            'Error',
-                            `There was an error setting float constant value.`,
+                            t(translationKeys.error),
+                            t(translationKeys.errorSetConstantValue),
                             'error'
                         )
                     }
@@ -308,8 +313,8 @@ const AdminPanel = (props) => {
                     updateConstantInConstantsList(constant.name, { constant: amount, update_date: moment().unix() });
 
                     Swal.fire(
-                        'Success',
-                        response.data.message || `Constant ${constant.name} value is now ${amount}.`,
+                        t(translationKeys.success),
+                        response.data.message || t(translationKeys.constantValueChanged, { name: constant.name, amount }),
                         'success'
                     )
                 })
@@ -365,16 +370,16 @@ const AdminPanel = (props) => {
                     console.log('Error streamers: ', errorStreamers);
 
                     Swal.fire({
-                        title: 'Upload finished!',
-                        html: `Streamers upload finished. 
+                        title: t(translationKeys.uploadFinished),
+                        html: `${t(translationKeys.streamersUploadFinished)} 
                         <br> 
-                        Successfully uploaded streamers emails: ${successStreamers.map(i => i.email).join(", ")}. 
+                        ${t(translationKeys.successfullyUploadedStreamersEmail)}: ${successStreamers.map(i => i.email).join(", ")}. 
                         ${errorStreamers.length > 0 ? `
                         <br>
-                         Error streamers emails: ${errorStreamers.map(i => i.email).join(", ")}. 
+                         ${t(translationKeys.errorStreamersEmails)}: ${errorStreamers.map(i => i.email).join(", ")}. 
                          <br>
                         ` : ''}
-                          ${invalidRows.length} rows were ignored because one or more required fields were missing.`,
+                          ${invalidRows.length} ${t(translationKeys.rowsWereIgnored)}`,
                         icon: 'success'
                     });
 
@@ -397,7 +402,7 @@ const AdminPanel = (props) => {
     const usersTab = (
         <div>
             <div className="form-group">
-                <label className="font-weight-bold text-dark">Filter by email:</label>
+                <label className="font-weight-bold text-dark">{t(translationKeys.filterByEmail)}:</label>
                 <div className="input-group">
                     <input
                         className="form-control"
@@ -412,12 +417,12 @@ const AdminPanel = (props) => {
             <table className="table table-striped">
                 <thead>
                     <tr>
-                        <th scope="col">Email</th>
-                        <th scope="col">Balance</th>
-                        <th scope="col">Creation Date</th>
+                        <th scope="col">{t(translationKeys.email)}</th>
+                        <th scope="col">{t(translationKeys.balance)}</th>
+                        <th scope="col">{t(translationKeys.creationDate)}</th>
 
-                        <th scope="col">Set Balance</th>
-                        <th scope="col">Delete</th>
+                        <th scope="col">{t(translationKeys.setBalance)}</th>
+                        <th scope="col">{t(translationKeys.delete)}</th>
                     </tr>
                 </thead>
                 <tbody className="table-bordered">
@@ -431,7 +436,7 @@ const AdminPanel = (props) => {
                     </tr>)}
                 </tbody>
             </table>
-            {(!loadingUsersList && (!filteredUsersList || filteredUsersList.length === 0)) ? <p>No users found.</p> : null}
+            {(!loadingUsersList && (!filteredUsersList || filteredUsersList.length === 0)) ? <p>{t(translationKeys.noUsersFound)}</p> : null}
             {loadingUsersList && (
                 <div className="card mb-3">
                     <div className="card-body text-center p-2 ">
@@ -447,7 +452,7 @@ const AdminPanel = (props) => {
     const streamersTab = (
         <div>
             <div className="form-group">
-                <label className="font-weight-bold text-dark">Filter by email:</label>
+                <label className="font-weight-bold text-dark">{t(translationKeys.filterByEmail)}:</label>
                 <div className="input-group">
                     <input
                         className="form-control"
@@ -465,14 +470,14 @@ const AdminPanel = (props) => {
                 <thead>
                     <tr>
                         {/* <th scope="col">#</th> */}
-                        <th scope="col">Email</th>
-                        <th scope="col">Email Password</th>
-                        <th scope="col">Host</th>
-                        <th scope="col">Port</th>
-                        <th scope="col">Proxy Username</th>
-                        <th scope="col">Proxy Password</th>
-                        <th scope="col">Active</th>
-                        <th scope="col">Previous Activity Date</th>
+                        <th scope="col">{t(translationKeys.email)}</th>
+                        <th scope="col">{t(translationKeys.emailPassword)}</th>
+                        <th scope="col">{t(translationKeys.host)}</th>
+                        <th scope="col">{t(translationKeys.port)}</th>
+                        <th scope="col">{t(translationKeys.proxyUsername)}</th>
+                        <th scope="col">{t(translationKeys.proxyPassword)}</th>
+                        <th scope="col">{t(translationKeys.active)}</th>
+                        <th scope="col">{t(translationKeys.previousActivityDate)}</th>
 
                         {/* <th scope="col">Edit</th> */}
                         {/* <th scope="col">Delete</th> */}
@@ -486,7 +491,7 @@ const AdminPanel = (props) => {
                         <td>{u.port}</td>
                         <td>{u.proxy_username}</td>
                         <td>{u.proxy_password}</td>
-                        <td>{u.active ? <span className="text-success">Yes</span> : <span className="text-danger">No</span>}</td>
+                        <td>{u.active ? <span className="text-success">{t(translationKeys.yes)}</span> : <span className="text-danger">{t(translationKeys.no)}</span>}</td>
                         <td>{moment.unix(u.previous_activity_date).format('lll')}</td>
 
                         {/* <td><button className="btn btn-info"><i className="fa fa-edit"></i></button></td> */}
@@ -494,7 +499,7 @@ const AdminPanel = (props) => {
                     </tr>)}
                 </tbody>
             </table>
-            {(!loadingStreamersList && (!filteredStreamersList || filteredStreamersList.length === 0)) ? <p>No streamers found.</p> : null}
+            {(!loadingStreamersList && (!filteredStreamersList || filteredStreamersList.length === 0)) ? <p>{t(translationKeys.noStreamersFound)}</p> : null}
             {loadingStreamersList && (
                 <div className="card mb-3">
                     <div className="card-body text-center p-2 ">
@@ -510,7 +515,7 @@ const AdminPanel = (props) => {
     const floatConstantsTab = (
         <div>
             <div className="form-group">
-                <label className="font-weight-bold text-dark">Filter by name:</label>
+                <label className="font-weight-bold text-dark">{t(translationKeys.filterByName)}:</label>
                 <div className="input-group">
                     <input
                         className="form-control"
@@ -525,10 +530,10 @@ const AdminPanel = (props) => {
                 <thead>
                     <tr>
                         {/* <th scope="col">#</th> */}
-                        <th scope="col">Name</th>
-                        <th scope="col">Constant</th>
-                        <th scope="col">Update Date</th>
-                        <th scope="col">Edit</th>
+                        <th scope="col">{t(translationKeys.name)}</th>
+                        <th scope="col">{t(translationKeys.constant)}</th>
+                        <th scope="col">{t(translationKeys.updateDate)}</th>
+                        <th scope="col">{t(translationKeys.edit)}</th>
                     </tr>
                 </thead>
                 <tbody className="table-bordered">
@@ -540,7 +545,7 @@ const AdminPanel = (props) => {
                     </tr>)}
                 </tbody>
             </table>
-            {(!loadingConstantsList && (!filteredConstantsList || filteredConstantsList.length === 0)) ? <p>No float constants found.</p> : null}
+            {(!loadingConstantsList && (!filteredConstantsList || filteredConstantsList.length === 0)) ? <p>{t(translationKeys.noFloatConstantsFound)}</p> : null}
             {loadingConstantsList && (
                 <div className="card mb-3">
                     <div className="card-body text-center p-2 ">
@@ -572,13 +577,13 @@ const AdminPanel = (props) => {
         <div className="container-sm" style={{ maxWidth: '760px' }}>
 
             <div className="text-center mb-4 mt-5">
-                <h1 className="h3 mb-3 font-weight-normal">Admin Panel</h1>
+                <h1 className="h3 mb-3 font-weight-normal">{t(translationKeys.adminPanel)}</h1>
             </div>
 
             <div className="content px-3 my-3">
                 <ul className="nav nav-tabs mb-2">
-                    {Object.values(tabs).map(t => <li key={t} className="nav-item" onClick={() => setCurrentTab(t)}>
-                        <a className={`nav-link ${currentTab === t ? 'active' : ''}`} href="#">{t}</a>
+                    {Object.values(tabs).map(k => <li key={k} className="nav-item" onClick={() => setCurrentTab(k)}>
+                        <a className={`nav-link ${currentTab === k ? 'active' : ''}`} href="#">{t(k)}</a>
                     </li>)}
                 </ul>
                 {renderCurrentTab()}
@@ -587,4 +592,4 @@ const AdminPanel = (props) => {
     );
 }
 
-export default withRouter(observer(AdminPanel));
+export default withTranslation()(withRouter(observer(AdminPanel)));
