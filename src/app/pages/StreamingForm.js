@@ -12,8 +12,8 @@ const StreamingForm = (props) => {
 
     const { data: { user } } = authenticationStore;
 
-    const [minutes, setMinutes] = useState(1);
-    const [fbAccounts, setFbAccounts] = useState(1);
+    const [minutes, setMinutes] = useState(0);
+    const [fbAccounts, setFbAccounts] = useState(0);
     const [streamUrl, setStreamUrl] = useState('');
     const [streamingCost, setStreamingCost] = useState(null);
     const [userBalance, setUserBalance] = useState(null);
@@ -68,17 +68,17 @@ const StreamingForm = (props) => {
     }
 
 
-    useEffect(() => {
-        if (!_.isInteger(minutes))
-            setMinutes(Math.floor(minutes))
-        if (minutes < 1) setMinutes(1);
-    }, [minutes])
+    // useEffect(() => {
+    //     if (!_.isInteger(minutes))
+    //         setMinutes(Math.floor(minutes))
+    //     if (minutes < 0) setMinutes(0);
+    // }, [minutes])
 
-    useEffect(() => {
-        if (!_.isInteger(fbAccounts))
-            setFbAccounts(Math.floor(fbAccounts))
-        if (fbAccounts < 1) setFbAccounts(1);
-    }, [fbAccounts])
+    // useEffect(() => {
+    //     if (!_.isInteger(fbAccounts))
+    //         setFbAccounts(Math.floor(fbAccounts))
+    //     if (fbAccounts < 0) setFbAccounts(0);
+    // }, [fbAccounts])
 
     return (
         <div className="container-sm" style={{ maxWidth: '760px' }}>
@@ -90,11 +90,11 @@ const StreamingForm = (props) => {
                     <div>
                         <div className="form-group">
                             <label htmlFor="streamingFormMinutes">Number of minutes *</label>
-                            <input value={minutes} pattern="\d*" step="1" onChange={evt => setMinutes(evt.target.value)} min={1} type="number" className="form-control" id="streamingFormMinutes" />
+                            <input value={minutes} pattern="\d*" step="1" onChange={evt => setMinutes(evt.target.value)} min={0} type="number" className="form-control" id="streamingFormMinutes" />
                         </div>
                         <div className="form-group">
                             <label htmlFor="streamingFormAccounts">Number of Facebook accounts *</label>
-                            <input value={fbAccounts} pattern="\d*" step="1" onChange={evt => setFbAccounts(evt.target.value)} min={1} type="number" className="form-control" id="streamingFormAccounts" />
+                            <input value={fbAccounts} pattern="\d*" step="1" onChange={evt => setFbAccounts(evt.target.value)} min={0} type="number" className="form-control" id="streamingFormAccounts" />
                         </div>
                         <div className="form-group">
                             <label htmlFor="streamingFormStreamUrl">Link to stream *</label>
@@ -108,7 +108,7 @@ const StreamingForm = (props) => {
                                     <p>Balance after purchase: <span className="text-info">{userBalance - streamingCost}</span></p>
                                     : null} */}
                                 {enoughMoneyForPurchase ?
-                                    <p className="text-success">You have enough balance to do this purchase.</p> : (
+                                    <p className="text-success">You can do this purchase.</p> : (
                                         <p className="text-danger">Not enough balance for this purchase.</p>
                                     )}
                             </div>
