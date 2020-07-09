@@ -82,5 +82,7 @@
     "constant": "constant",
     "updateDate": "updateDate",
     "edit": "edit",
-    "adminPanel": "adminPanel"
+	"adminPanel": "adminPanel",
+	"pageNotFound": "pageNotFound",
+	"backToHomepage": "backToHomepage"
 }

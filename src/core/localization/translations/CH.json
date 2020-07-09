@@ -79,9 +79,11 @@
 	"no": "No",
 	"yes": "Yes",
 	"filterByName": "Filter by Name",
-    "name": "Name",
-    "constant": "Constant",
-    "updateDate": "Update Date",
+	"name": "Name",
+	"constant": "Constant",
+	"updateDate": "Update Date",
 	"edit": "Edit",
-	"adminPanel": "Admin Panel"
+	"adminPanel": "Admin Panel",
+	"pageNotFound": "Page not found.",
+	"backToHomepage": "Back to Homepage."
 }
