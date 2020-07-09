@@ -24,7 +24,7 @@ class StreamingResource(Resource):
         try:
             token = data['token']
             streamer_count = data['streamerCount']
-            stream_time = data['streamTime']
+            stream_time = data['streamTime'] * 60
         except KeyError:
             return {'message': 'request must include token, streamerCount, and streamTime'}, 422
 
@@ -63,7 +63,7 @@ class StreamingResource(Resource):
         try:
             token = data['token']
             streamer_count = data['streamerCount']
-            stream_time = data['streamTime']
+            stream_time = data['streamTime'] * 60
             stream_url = data['streamUrl']
         except KeyError:
             return {'message': 'request must include token, streamerCount, streamTime, and streamUrl'}, 422
@@ -164,6 +164,12 @@ class StreamingResource(Resource):
     def get_available_streamers(self, streamer_count):
         available_streamers = StreamerModel.query.filter_by(
             active=False).limit(streamer_count).all()
+
+        # return all streamers if there are less than the streamer count
+        if len(available_streamers) < streamer_count:
+            available_streamers = StreamerModel.query.limit(
+                streamer_count).all()
+
         return available_streamers
 
 
