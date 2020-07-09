@@ -73,6 +73,8 @@ const AdminPanel = (props) => {
 
     // Reset all values on tab change
     useEffect(() => {
+        if (!initialized) return;
+
         resetAllValues();
 
         switch (currentTab) {
@@ -90,7 +92,7 @@ const AdminPanel = (props) => {
         }
         handleFetchUsersList();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentTab]);
+    }, [initialized, currentTab]);
 
     const handleFetchAvailableBots = (cb) => {
         adminStore.getStreamingBotsAvailable({ token: adminToken }).then(response => {
