@@ -39,6 +39,12 @@ class StreamingResource(Resource):
         available_streamer_count = len(
             self.get_available_streamers(streamer_count))
 
+        # check if there are enough streamers
+        if available_streamer_count >= streamer_count:
+            sufficient_streamers = True
+        else:
+            sufficient_streamers = False
+
         # get how much it would cost
         cost = self.calculate_cost(stream_time, streamer_count)
 
@@ -51,7 +57,8 @@ class StreamingResource(Resource):
             sufficient_funds = True
 
         return {'status': 'success', 'balance': balance, 'cost': cost,
-                'available_streamers': available_streamer_count, 'sufficient_funds': sufficient_funds}, 201
+                'available_streamers': available_streamer_count,
+                'sufficient_funds': sufficient_funds, 'sufficient_streamers': sufficient_streamers}, 201
 
     # create a put method to start streaming.
 
@@ -121,7 +128,7 @@ class StreamingResource(Resource):
         db.session.commit()
 
     def calculate_cost(self, time, streamers):
-        # convert the time to minutes
+        # convert seconds to minutes
         minutes = time / 60
 
         # get the constants
