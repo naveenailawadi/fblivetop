@@ -23,8 +23,8 @@ class StreamingResource(Resource):
         # take out the necessary stuff
         try:
             token = data['token']
-            streamer_count = data['streamerCount']
-            stream_time = data['streamTime'] * 60
+            streamer_count = int(data['streamerCount'])
+            stream_time = float(data['streamTime']) * 60
         except KeyError:
             return {'message': 'request must include token, streamerCount, and streamTime'}, 422
 
@@ -69,8 +69,8 @@ class StreamingResource(Resource):
         # take out the necessary stuff
         try:
             token = data['token']
-            streamer_count = data['streamerCount']
-            stream_time = data['streamTime'] * 60
+            streamer_count = int(data['streamerCount'])
+            stream_time = float(data['streamTime']) * 60
             stream_url = data['streamUrl']
         except KeyError:
             return {'message': 'request must include token, streamerCount, streamTime, and streamUrl'}, 422
