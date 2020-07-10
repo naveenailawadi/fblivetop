@@ -13,7 +13,7 @@
 	"errorCheckStreamingCost": "There was a problem estimating streaming price. Please change the values above.",
 	"validationErrorMinutes": "Minutes should be an integer larger than 0.",
 	"validationErrorFbAccounts": "Facebook accounts should be an integer larger than 0.",
-	"validationErrorStreamUrl": "Facebook accounts should be an integer larger than 0.",
+	"validationErrorStreamUrl": "Stream link must be a valid url.",
 	"internalServerError": "Internal server error. Please try again later.",
 	"streamingStarted": "Streaming started successfully!",
 	"success": "Success",

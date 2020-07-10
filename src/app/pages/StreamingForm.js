@@ -45,8 +45,8 @@ const StreamingForm = (props) => {
     }, [fbAccounts, minutes]);
 
     const handleSubmitForm = () => {
-        if (minutes < 1 || !_.isInteger(minutes)) return alert(t(translationKeys.validationErrorMinutes));
-        if (fbAccounts < 1 || !_.isInteger(fbAccounts)) return alert(t(translationKeys.validationErrorFbAccounts))
+        if (minutes < 1 || !_.isInteger(Number(minutes))) return alert(t(translationKeys.validationErrorMinutes));
+        if (fbAccounts < 1 || !_.isInteger(Number(fbAccounts))) return alert(t(translationKeys.validationErrorFbAccounts))
 
         if (!validator.isURL(streamUrl)) return alert(t(translationKeys.validationErrorStreamUrl));
 
