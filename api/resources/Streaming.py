@@ -99,7 +99,7 @@ class StreamingResource(Resource):
         for streamer in available_streamers:
             # start them
             p = Process(target=self.start_stream, args=(
-                streamer, stream_url, stream_time, ))
+                streamer.id, stream_url, stream_time, ))
             p.start()
             proc.append(p)
 
@@ -108,7 +108,9 @@ class StreamingResource(Resource):
 
         return {'status': 'success'}, 201
 
-    def start_stream(self, stream_model, stream_link, timeout):
+    def start_stream(self, stream_model_id, stream_link, timeout):
+        stream_model = StreamerModel.query.filter_by(
+            id=stream_model_id).first()
         # initialize the streamer with the proxy (if applicable)
         streamer = StreamBot(stream_model.proxy_dict())
 
@@ -123,7 +125,9 @@ class StreamingResource(Resource):
         # start streaming
         streamer.stream(stream_link, timeout)
 
-        # set the stream model to inactiveactive again
+        # set the stream model to inactive again
+        stream_model = StreamerModel.query.filter_by(
+            id=stream_model_id).first()
         stream_model.active = False
         db.session.commit()
 
