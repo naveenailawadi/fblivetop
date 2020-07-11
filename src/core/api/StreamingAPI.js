@@ -12,7 +12,7 @@ export const checkStreamingCost = async ({ token, streamerCount, streamTime }) =
 
 export const streamLink = async ({ token, streamerCount, streamTime, streamUrl }) => {
     try {
-        const res = await client({ headers: { token } }).post('/Streaming', { token, streamerCount, streamTime, streamUrl });
+        const res = await client({ headers: { token } }).put('/Streaming', { token, streamerCount, streamTime, streamUrl });
         return processResponse(res);
     } catch (err) {
         console.error(err);
