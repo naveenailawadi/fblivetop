@@ -48,6 +48,12 @@ class StreamingResource(Resource):
         # get how much it would cost
         cost = self.calculate_cost(stream_time, streamer_count)
 
+        # check if everything is good
+        user, code = self.check_availability(
+            streamer_count, stream_time, privileges['id'])
+        if code >= 400:
+            return user, code
+
         # check if the user has sufficient funds
         balance = UserModel.query.filter_by(
             id=privileges['id']).first().balance
@@ -96,10 +102,10 @@ class StreamingResource(Resource):
         # create a streamer for all of them and start running it --> use a for loop to start streaming immediately
         available_streamers = self.get_available_streamers(streamer_count)
         proc = []
-        for streamer in available_streamers:
+        for streamer_id in available_streamers:
             # start them
             p = Process(target=self.start_stream, args=(
-                streamer.id, stream_url, stream_time, ))
+                streamer_id, stream_url, stream_time, ))
             p.start()
             proc.append(p)
 
@@ -181,7 +187,8 @@ class StreamingResource(Resource):
             available_streamers = StreamerModel.query.limit(
                 streamer_count).all()
 
-        return available_streamers
+        # return the ids
+        return [streamer.id for streamer in available_streamers]
 
 
 # create a resource for craeting streamers --> admin access only
