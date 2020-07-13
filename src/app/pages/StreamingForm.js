@@ -21,6 +21,7 @@ const StreamingForm = (props) => {
     const [streamingCost, setStreamingCost] = useState(null);
     const [userBalance, setUserBalance] = useState(null);
     const [availableStreamers, setAvailableStreamers] = useState(null);
+    const [errorMessage, setErrorMessage] = useState(null);
 
     const loadingCheckStreamingCost = streamingStore.loaders.checkStreamingCost;
     const loadingGetStreamingBotsAvailable = streamingStore.loaders.getStreamingBotsAvailable;
@@ -30,11 +31,16 @@ const StreamingForm = (props) => {
     const requiredFieldsFilled = (streamUrl) && !_.isNil(minutes) && !_.isNil(fbAccounts)
 
     useEffect(() => {
+        if (minutes < 1 || fbAccounts < 1) return;
+
         streamingStore.checkStreamingCost({ token: user.token, streamerCount: Number(fbAccounts), streamTime: Number(minutes) }).then(response => {
             if (response.error) {
                 setStreamingCost(null);
                 setUserBalance(null);
                 setAvailableStreamers(null);
+                if (response.data && response.data.message) {
+                    setErrorMessage(response.data.message);
+                }
             } else {
                 setStreamingCost(response.data.cost);
                 setUserBalance(response.data.balance);
@@ -126,8 +132,11 @@ const StreamingForm = (props) => {
                             </div>
                         )}
 
-                        {!loadingCheckStreamingCost && (_.isNil(streamingCost) || _.isNil(userBalance)) && (
-                            <p className="text-danger">{t(translationKeys.errorCheckStreamingCost)}</p>
+                        {!loadingCheckStreamingCost && (_.isNil(streamingCost) || _.isNil(userBalance)) && minutes > 0 && fbAccounts > 0 && (
+                            <p className="text-danger">
+                                {t(translationKeys.errorCheckStreamingCost)} <br />
+                                {errorMessage && `"${errorMessage}"`}
+                            </p>
                         )}
 
                         <button className="btn btn-lg btn-primary btn-block" onClick={handleSubmitForm} disabled={loadingStreamLink || loadingCheckStreamingCost || loadingGetStreamingBotsAvailable || !enoughMoneyForPurchase || !requiredFieldsFilled}>{t(translationKeys.sumbit)}</button>

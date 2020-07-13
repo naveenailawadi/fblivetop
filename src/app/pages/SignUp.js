@@ -36,8 +36,8 @@ const SignUp = (props) => {
 
         authenticationStore.signUp({ email, password }).then(response => {
             if (response.error) {
-                if (response.response && response.response.data && response.response.data.message)
-                    alert(response.response.data.message);
+                if (response && response.data && response.data.message)
+                    alert(response.data.message);
                 else alert(t(translationKeys.errorSignUp));
             } else {
                 Swal.fire(

@@ -24,9 +24,10 @@ export const processResponse = response => {
   return result;
 };
 
-export const processErrorResponse = response => {
+export const processErrorResponse = err => {
   const result = {
-    ...response,
+    ...err,
+    ...err.response,
     success: true,
     error: true
   };
