@@ -120,11 +120,6 @@ class StreamingResource(Resource):
         # initialize the streamer with the proxy (if applicable)
         streamer = StreamBot(stream_model.proxy_dict())
 
-        # make stream model active and change last activity date
-        stream_model.active = True
-        stream_model.previous_activity_date = dt.now()
-        db.session.commit()
-
         # login
         streamer.login(stream_model.email, stream_model.email_password)
 
@@ -132,10 +127,6 @@ class StreamingResource(Resource):
         streamer.stream(stream_link, timeout)
 
         # set the stream model to inactive again
-        stream_model = StreamerModel.query.filter_by(
-            id=stream_model_id).first()
-        stream_model.active = False
-        db.session.commit()
 
     def calculate_cost(self, time, streamers):
         # convert seconds to minutes
