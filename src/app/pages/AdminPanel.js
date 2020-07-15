@@ -19,7 +19,7 @@ const tabs = {
 };
 
 const AdminPanel = (props) => {
-    const { t } = props;  
+    const { t } = props;
 
     const dataStore = useContext(DataStoreContext);
     const { adminStore, authenticationStore } = dataStore;
@@ -337,7 +337,7 @@ const AdminPanel = (props) => {
         streamersData.forEach((streamerRow) => {
             const newStreamer = {};
             streamerRow.forEach((cellValue, cellIndex) => {
-                newStreamer[tableHead[cellIndex]] = cellValue;
+                newStreamer[tableHead[cellIndex]] = cellValue.trim();
             });
             parsedStreamersList.push(newStreamer);
         });
@@ -354,6 +354,8 @@ const AdminPanel = (props) => {
         const errorStreamers = [];
         const successStreamers = [];
 
+        if (validRows.length === 0) return Swal.fire(t(translationKeys.error), "Invalid .csv format.", 'error');
+
         validRows.forEach(streamer => {
             adminStore.addStreamer({ token: adminToken, ...streamer }).then((response) => {
                 done += 1;
@@ -364,7 +366,7 @@ const AdminPanel = (props) => {
                     successStreamers.push(streamer);
                 }
 
-                if (done === validRows.length) {
+                if (done >= validRows.length) {
                     // Finished
                     console.log('Success streamers: ', successStreamers);
                     console.log('Error streamers: ', errorStreamers);
