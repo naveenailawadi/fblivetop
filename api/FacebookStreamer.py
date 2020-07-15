@@ -85,13 +85,13 @@ class StreamBot:
                 break
 
         # close the streamer
-        self.close()
+        self.quit()
 
     def check_proxy(self):
         self.driver.get('https://whatsmyip.com/')
 
-    def close(self):
-        self.driver.close()
+    def quit(self):
+        self.driver.quit()
 
 
 if __name__ == '__main__':
