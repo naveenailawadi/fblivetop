@@ -1,8 +1,7 @@
 from flask_restful import Resource
 from api.resources import load_json, validate_user_token, validate_admin_token, load_header_token
-from api.FacebookStreamer import StreamBot
+from scripts.FacebookStreamer import StreamBot
 from api.models import StreamerModel, UserModel, db, object_as_dict, update_obj, get_float_constant
-from datetime import datetime as dt
 from multiprocessing import Process
 
 

@@ -33,3 +33,4 @@ geckodriver.log
 *.txt
 admin_config.py
 secrets.py
+config.json

@@ -3,11 +3,14 @@ from selenium.common.exceptions import NoSuchElementException, ElementNotInterac
 from selenium.webdriver.common.keys import Keys
 import time
 
-SLEEP_INCREMENT = 15
+WAIT_INCREMENT = 15
 
 
 class StreamBot:
-    def __init__(self, proxy=None, headless=True):
+    def __init__(self, proxy=None, headless=True, wait_increment=WAIT_INCREMENT):
+        # set the sleep increment
+        self.wait_increment = wait_increment
+
         # create a webdriver to work with
         options = webdriver.ChromeOptions()
         options.add_argument('--no-sandbox')
@@ -39,7 +42,7 @@ class StreamBot:
     def login(self, email, password):
         # go to facebook
         self.driver.get('https://www.facebook.com/')
-        time.sleep(SLEEP_INCREMENT)
+        time.sleep(self.wait_increment)
 
         # put in the keys at the correct box
         username_box = self.driver.find_element_by_xpath(
@@ -49,12 +52,12 @@ class StreamBot:
         password_box = self.driver.find_element_by_xpath('//input[@id="pass"]')
         password_box.send_keys(password)
         password_box.send_keys(Keys.ENTER)
-        time.sleep(SLEEP_INCREMENT * 2)
+        time.sleep(self.wait_increment * 2)
 
     def stream(self, streaming_link, timeout):
         # go to the link
         self.driver.get(streaming_link)
-        time.sleep(SLEEP_INCREMENT * 4)
+        time.sleep(self.wait_increment * 4)
 
         # handle for new and old facebook sites
         try:
