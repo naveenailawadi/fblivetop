@@ -38,7 +38,7 @@ class StreamBot:
         self.driver = webdriver.Chrome(
             options=options, seleniumwire_options=prox_options)
 
-    # add some functions to login and stream things here
+    # add some functions to login and stream things here (returns boolean on availability)
     def login(self, email, password):
         # go to facebook
         self.driver.get('https://www.facebook.com/')
@@ -53,6 +53,17 @@ class StreamBot:
         password_box.send_keys(password)
         password_box.send_keys(Keys.ENTER)
         time.sleep(self.wait_increment * 2)
+
+        # check if there is a disabled screen
+        active = True
+        try:
+            disabled = self.driver.find_element_by_xpath(
+                '//img[@class="_96id"]')
+            active = False
+        except NoSuchElementException:
+            pass
+
+        return active
 
     def stream(self, streaming_link, timeout):
         # go to the link

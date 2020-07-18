@@ -100,11 +100,42 @@ class StreamingResource(Resource):
 
         # create a streamer for all of them and start running it --> use a for loop to start streaming immediately
         available_streamers = self.get_available_streamers(streamer_count)
+        available_streamer_count = len(available_streamers)
+
+        bots = []
+        # log in each streamer to check if they are available
+        for stream_model in available_streamers:
+            streamer, active = self.check_bot(stream_model)
+
+            # add the bot to the bots
+            if active:
+                bots.append(streamer)
+            else:
+                # set the model to inactive
+                stream_model.active = False
+                db.session.commit()
+
+        newest_model = available_streamers[-1]
+        while len(bots) < available_streamer_count:
+            # get the next newest model that is active
+            newest_model = StreamerModel.query.filter(
+                StreamerModel.id > newest_model.id, StreamerModel.active is True).first()
+
+            # break if no more streamers
+            if not newest_model:
+                break
+
+            streamer, active = self.check_bot(stream_model)
+
+            # add the bot to the bots
+            if active:
+                bots.append(streamer)
+
         proc = []
-        for streamer_id in available_streamers:
+        for streamer in bots:
             # start them
             p = Process(target=self.start_stream, args=(
-                streamer_id, stream_url, stream_time, ))
+                streamer, stream_url, stream_time, ))
             p.start()
             proc.append(p)
 
@@ -113,19 +144,9 @@ class StreamingResource(Resource):
 
         return {'status': 'success'}, 201
 
-    def start_stream(self, stream_model_id, stream_link, timeout):
-        stream_model = StreamerModel.query.filter_by(
-            id=stream_model_id).first()
-        # initialize the streamer with the proxy (if applicable)
-        streamer = StreamBot(stream_model.proxy_dict())
-
-        # login
-        streamer.login(stream_model.email, stream_model.email_password)
-
+    def start_stream(self, streamer, stream_link, timeout):
         # start streaming
         streamer.stream(stream_link, timeout)
-
-        # set the stream model to inactive again
 
     def calculate_cost(self, time, streamers):
         # convert seconds to minutes
@@ -169,16 +190,21 @@ class StreamingResource(Resource):
         return user, 201
 
     def get_available_streamers(self, streamer_count):
+        # make sure that all the streamer accounts are activated
         available_streamers = StreamerModel.query.filter_by(
-            active=False).limit(streamer_count).all()
-
-        # return all streamers if there are less than the streamer count
-        if len(available_streamers) < streamer_count:
-            available_streamers = StreamerModel.query.limit(
-                streamer_count).all()
+            active=True).limit(streamer_count).all()
 
         # return the ids
         return [streamer.id for streamer in available_streamers]
+
+    def check_bot(self, stream_model):
+        streamer = StreamBot(stream_model.proxy_dict())
+
+        # check the login
+        active = streamer.login(
+            stream_model.email, stream_model.email_password)
+
+        return streamer, active
 
 
 # create a resource for craeting streamers --> admin access only
