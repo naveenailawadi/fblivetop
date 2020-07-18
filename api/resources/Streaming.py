@@ -275,3 +275,35 @@ class StreamerManagementResource(Resource):
         db.session.commit()
 
         return message, 201
+
+    # create a request to delete the streamers
+    def delete(self):
+        # validate the data
+        data = load_json()
+
+        # get the right stuff out
+        try:
+            token = data['token']
+            email = data['email']
+
+        except KeyError:
+            return {'message': 'must include: token, email'}, 422
+
+        # validate the admin
+        privileges, code = validate_admin_token(token)
+
+        # return a code if invalid
+        if code >= 400:
+            return privileges, code
+
+        # check if the streamer exists (email must be unique)
+        streamer = StreamerModel.query.filter_by(email=email).first()
+
+        if not streamer:
+            return {'message': f"No streamer found with email {email}"}, 404
+
+        # else delete the streamer
+        db.session.delete(streamer)
+        db.session.commit()
+
+        return {'status': 'success', 'message': f"Deleted account associated with {streamer.email}"}, 201
