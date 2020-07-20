@@ -3,11 +3,17 @@ from selenium.common.exceptions import NoSuchElementException, ElementNotInterac
 from selenium.webdriver.common.keys import Keys
 import time
 
-SLEEP_INCREMENT = 15
+WAIT_INCREMENT = 15
 
 
 class StreamBot:
-    def __init__(self, proxy=None, headless=True):
+    def __init__(self, proxy=None, headless=True, wait_increment=WAIT_INCREMENT, id=None):
+        # set the sleep increment
+        self.wait_increment = wait_increment
+
+        # associate it with a streamer
+        self.id = id
+
         # create a webdriver to work with
         options = webdriver.ChromeOptions()
         options.add_argument('--no-sandbox')
@@ -35,11 +41,11 @@ class StreamBot:
         self.driver = webdriver.Chrome(
             options=options, seleniumwire_options=prox_options)
 
-    # add some functions to login and stream things here
+    # add some functions to login and stream things here (returns boolean on availability)
     def login(self, email, password):
         # go to facebook
         self.driver.get('https://www.facebook.com/')
-        time.sleep(SLEEP_INCREMENT)
+        time.sleep(self.wait_increment)
 
         # put in the keys at the correct box
         username_box = self.driver.find_element_by_xpath(
@@ -49,16 +55,31 @@ class StreamBot:
         password_box = self.driver.find_element_by_xpath('//input[@id="pass"]')
         password_box.send_keys(password)
         password_box.send_keys(Keys.ENTER)
-        time.sleep(SLEEP_INCREMENT * 2)
+        time.sleep(self.wait_increment * 2)
+
+        # check if there is a disabled screen
+        active = True
+        try:
+            _ = self.driver.find_element_by_xpath(
+                '//img[@class="_96id"]')
+            active = False
+
+            # close the streamer
+            self.quit()
+        except NoSuchElementException:
+            pass
+
+        return active
 
     def stream(self, streaming_link, timeout):
         # go to the link
         self.driver.get(streaming_link)
-        time.sleep(SLEEP_INCREMENT * 4)
+        time.sleep(self.wait_increment * 2)
 
         # handle for new and old facebook sites
         try:
-            play_button = self.driver.find_element_by_xpath('//i//div')
+            play_button = self.driver.find_element_by_xpath(
+                '//i//div')
         except NoSuchElementException:
             try:
                 play_button = self.driver.find_element_by_xpath(
@@ -99,16 +120,16 @@ if __name__ == '__main__':
         "id": 1,
         "host": "138.229.96.79",
         "port": "4444",
-        "email": "79647676281",
-        "email_password": "lJzXfbK2Fy",
+        "email": "williams_michelle292@mittywe.xyz",
+        "email_password": "22SzTTPmqN",
         "username": "1a9e45a34f",
         "password": "OPSXjqHF",
         "active": True,
         "previous_activity_date": "1593642500"
     }
+
     bot = StreamBot(proxy=proxy, headless=False)
     bot.check_proxy()
     bot.login(proxy['email'], proxy['email_password'])
-
     bot.stream(
-        'https://www.facebook.com/PoolsharkGaming/videos/2967066136681357', 30)
+        'https://www.facebook.com/StoneMountain64/videos/255749355672787', 30)

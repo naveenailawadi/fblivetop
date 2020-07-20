@@ -30,7 +30,7 @@ class StreamerModel(db.Model):
     proxy_password = db.Column(db.String(50), nullable=True)
 
     # store info for activity
-    active = db.Column(db.Boolean, default=False)
+    active = db.Column(db.Boolean, default=True)
     previous_activity_date = db.Column(
         db.TIMESTAMP, server_default=db.func.current_timestamp())
 
