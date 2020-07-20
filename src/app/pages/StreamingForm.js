@@ -61,7 +61,7 @@ const StreamingForm = (props) => {
         streamingStore.streamLink({ token: user.token, streamerCount: fbAccounts, streamTime: minutes, streamUrl }).then(response => {
             if (response.error) {
                 return Swal.fire({
-                    title: t(translationKeys.unauthorized),
+                    title: t(translationKeys.error),
                     text: (response.data && response.data.message) || t(translationKeys.internalServerError),
                     icon: 'error'
                 });
