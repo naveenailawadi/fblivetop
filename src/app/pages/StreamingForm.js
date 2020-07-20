@@ -30,6 +30,8 @@ const StreamingForm = (props) => {
     const enoughMoneyForPurchase = !_.isNil(userBalance) && !_.isNil(streamingCost) && Number(userBalance) >= Number(streamingCost);
     const requiredFieldsFilled = (streamUrl) && !_.isNil(minutes) && !_.isNil(fbAccounts)
 
+    const loadingStreamLinkButton = loadingStreamLink || loadingCheckStreamingCost || loadingGetStreamingBotsAvailable;
+
     useEffect(() => {
         if (minutes < 1 || fbAccounts < 1) return;
 
@@ -139,7 +141,12 @@ const StreamingForm = (props) => {
                             </p>
                         )}
 
-                        <button className="btn btn-lg btn-primary btn-block" onClick={handleSubmitForm} disabled={loadingStreamLink || loadingCheckStreamingCost || loadingGetStreamingBotsAvailable || !enoughMoneyForPurchase || !requiredFieldsFilled}>{t(translationKeys.sumbit)}</button>
+                        <button className="btn btn-lg btn-primary btn-block" onClick={handleSubmitForm} disabled={loadingStreamLinkButton || !enoughMoneyForPurchase || !requiredFieldsFilled}>{!loadingStreamLinkButton ?
+                            t(translationKeys.sumbit)
+                            :
+                            (<div className="spinner-border" role="status" style={{ width: '2rem', height: '2rem' }}>
+                                <span className="sr-only">Loading...</span>
+                            </div>)}</button>
                     </div>
                 </div>
             </div>
