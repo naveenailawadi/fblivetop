@@ -21,6 +21,9 @@ class StreamBot:
         options.add_argument('--disable-gpu')
         options.add_argument('--disable-notifications')
 
+        # add a captcha solver
+        options.add_extension('extension_6_0_0_0.crx')
+
         if headless:
             options.add_argument('--headless')
 
@@ -63,14 +66,18 @@ class StreamBot:
             _ = self.driver.find_element_by_xpath(
                 '//img[@class="_96id"]')
             active = False
-        except NoSuchElementException:
+
             # close the streamer
             self.quit()
+        except NoSuchElementException:
             pass
 
         return active
 
     def stream(self, streaming_link, timeout):
+        # allow time for captcha solve
+        # time.sleep(self.wait_increment * 2)
+
         # go to the link
         self.driver.get(streaming_link)
         time.sleep(self.wait_increment * 4)
@@ -125,9 +132,9 @@ if __name__ == '__main__':
         "active": True,
         "previous_activity_date": "1593642500"
     }
+
     bot = StreamBot(proxy=proxy, headless=False)
     bot.check_proxy()
     bot.login(proxy['email'], proxy['email_password'])
-
     bot.stream(
-        'https://www.facebook.com/PoolsharkGaming/videos/2967066136681357', 30)
+        'https://www.facebook.com/StoneMountain64/videos/255749355672787', 30)
