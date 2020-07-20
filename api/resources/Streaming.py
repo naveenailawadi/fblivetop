@@ -1,8 +1,9 @@
 from flask_restful import Resource
 from api.resources import load_json, validate_user_token, validate_admin_token, load_header_token
-from scripts.FacebookStreamer import StreamBot
 from api.models import StreamerModel, UserModel, db, object_as_dict, update_obj, get_float_constant
-from multiprocessing import Process
+from scripts.FacebookStreamer import StreamBot
+from multiprocessing import Process, Manager
+from urllib3.exceptions import MaxRetryError
 
 
 class StreamingResource(Resource):
@@ -66,7 +67,6 @@ class StreamingResource(Resource):
                 'sufficient_funds': sufficient_funds, 'sufficient_streamers': sufficient_streamers}, 201
 
     # create a put method to start streaming.
-
     def put(self):
         # get the user data
         data = load_json()
@@ -75,8 +75,8 @@ class StreamingResource(Resource):
         try:
             token = data['token']
             streamer_count = int(data['streamerCount'])
-            stream_time = float(data['streamTime']) * 60
-            stream_url = data['streamUrl']
+            self.stream_time = float(data['streamTime']) * 60
+            self.stream_url = data['streamUrl']
         except KeyError:
             return {'message': 'request must include token, streamerCount, streamTime, and streamUrl'}, 422
 
@@ -89,12 +89,12 @@ class StreamingResource(Resource):
 
         # check if everything is good
         user, code = self.check_availability(
-            streamer_count, stream_time, privileges['id'])
+            streamer_count, self.stream_time, privileges['id'])
         if code >= 400:
             return user, code
 
         # else, charge them
-        cost = self.calculate_cost(stream_time, streamer_count)
+        cost = self.calculate_cost(self.stream_time, streamer_count)
         user.balance -= cost
         db.session.commit()
 
@@ -102,21 +102,18 @@ class StreamingResource(Resource):
         available_streamers = self.get_available_streamers(streamer_count)
         available_streamer_count = len(available_streamers)
 
-        bots = []
+        self.manager = Manager()
+        self.bots = []
+
+        self.proc = []
         # log in each streamer to check if they are available
-        for stream_model in available_streamers:
-            streamer, active = self.check_bot(stream_model)
+        for streamer in available_streamers:
+            self.add_bot(streamer)
 
-            # add the bot to the bots
-            if active:
-                bots.append(streamer)
-            else:
-                # set the model to inactive
-                stream_model.active = False
-                db.session.commit()
+        newest_model = StreamerModel.query.filter_by(
+            id=available_streamers[-1]).first()
 
-        newest_model = available_streamers[-1]
-        while len(bots) < available_streamer_count:
+        while len(self.bots) < available_streamer_count:
             # get the next newest model that is active
             newest_model = StreamerModel.query.filter(
                 StreamerModel.id > newest_model.id, StreamerModel.active is True).first()
@@ -125,28 +122,25 @@ class StreamingResource(Resource):
             if not newest_model:
                 break
 
-            streamer, active = self.check_bot(stream_model)
+            streamer, active = self.check_bot(newest_model)
 
             # add the bot to the bots
             if active:
-                bots.append(streamer)
+                self.add_bot(newest_model.id)
 
-        proc = []
-        for streamer in bots:
-            # start them
-            p = Process(target=self.start_stream, args=(
-                streamer, stream_url, stream_time, ))
-            p.start()
-            proc.append(p)
-
-        for p in proc:
+        for p in self.proc:
             p.join()
 
         return {'status': 'success'}, 201
 
     def start_stream(self, streamer, stream_link, timeout):
         # start streaming
-        streamer.stream(stream_link, timeout)
+        print(f"starting stream on link {stream_link}")
+        try:
+            streamer.stream(stream_link, timeout)
+            print(f"Stream on link {stream_link} started successfully")
+        except MaxRetryError:
+            print(f"Failed to connect on stream with streamer {streamer.id}")
 
     def calculate_cost(self, time, streamers):
         # convert seconds to minutes
@@ -197,14 +191,40 @@ class StreamingResource(Resource):
         # return the ids
         return [streamer.id for streamer in available_streamers]
 
-    def check_bot(self, stream_model):
-        streamer = StreamBot(stream_model.proxy_dict())
+    def check_bot(self, streamer_id):
+        stream_model = StreamerModel.query.filter_by(id=streamer_id).first()
+        print(f"Found model in database associated with {streamer_id}")
+
+        streamer = StreamBot(stream_model.proxy_dict(),
+                             id=streamer_id)
+        print(f"Created streamer with id {streamer_id}")
 
         # check the login
         active = streamer.login(
             stream_model.email, stream_model.email_password)
 
         return streamer, active
+
+    def add_bot(self, streamer_id):
+        streamer, active = self.check_bot(streamer_id)
+
+        # add the bot to the bots
+        if active:
+            print(f"Streamer with id {streamer_id} is active")
+            self.bots.append(streamer)
+
+            # start a process
+            p = Process(target=self.start_stream, args=(
+                streamer, self.stream_url, self.stream_time, ))
+            p.start()
+            self.proc.append(p)
+        else:
+            print(f"Streamer with id {streamer} is not active")
+            stream_model = StreamerModel.query.filter_by(
+                id=streamer_id).first()
+            # set the model to inactive
+            stream_model.active = False
+            db.session.commit()
 
 
 # create a resource for craeting streamers --> admin access only

@@ -7,9 +7,12 @@ WAIT_INCREMENT = 15
 
 
 class StreamBot:
-    def __init__(self, proxy=None, headless=True, wait_increment=WAIT_INCREMENT):
+    def __init__(self, proxy=None, headless=True, wait_increment=WAIT_INCREMENT, id=None):
         # set the sleep increment
         self.wait_increment = wait_increment
+
+        # associate it with a streamer
+        self.id = id
 
         # create a webdriver to work with
         options = webdriver.ChromeOptions()
@@ -57,10 +60,12 @@ class StreamBot:
         # check if there is a disabled screen
         active = True
         try:
-            disabled = self.driver.find_element_by_xpath(
+            _ = self.driver.find_element_by_xpath(
                 '//img[@class="_96id"]')
             active = False
         except NoSuchElementException:
+            # close the streamer
+            self.quit()
             pass
 
         return active
