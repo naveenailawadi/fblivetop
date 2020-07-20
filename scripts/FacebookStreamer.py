@@ -75,9 +75,6 @@ class StreamBot:
         return active
 
     def stream(self, streaming_link, timeout):
-        # allow time for captcha solve
-        # time.sleep(self.wait_increment * 2)
-
         # go to the link
         self.driver.get(streaming_link)
         time.sleep(self.wait_increment * 4)
