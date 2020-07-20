@@ -21,9 +21,6 @@ class StreamBot:
         options.add_argument('--disable-gpu')
         options.add_argument('--disable-notifications')
 
-        # add a captcha solver
-        options.add_extension('extension_6_0_0_0.crx')
-
         if headless:
             options.add_argument('--headless')
 
@@ -82,7 +79,7 @@ class StreamBot:
         # handle for new and old facebook sites
         try:
             play_button = self.driver.find_element_by_xpath(
-                '//div[@role="main"]')
+                '//i//div')
         except NoSuchElementException:
             try:
                 play_button = self.driver.find_element_by_xpath(
@@ -123,8 +120,8 @@ if __name__ == '__main__':
         "id": 1,
         "host": "138.229.96.79",
         "port": "4444",
-        "email": "79647676281",
-        "email_password": "lJzXfbK2Fy",
+        "email": "williams_michelle292@mittywe.xyz",
+        "email_password": "22SzTTPmqN",
         "username": "1a9e45a34f",
         "password": "OPSXjqHF",
         "active": True,
