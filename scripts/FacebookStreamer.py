@@ -77,11 +77,12 @@ class StreamBot:
     def stream(self, streaming_link, timeout):
         # go to the link
         self.driver.get(streaming_link)
-        time.sleep(self.wait_increment * 4)
+        time.sleep(self.wait_increment * 2)
 
         # handle for new and old facebook sites
         try:
-            play_button = self.driver.find_element_by_xpath('//i//div')
+            play_button = self.driver.find_element_by_xpath(
+                '//div[@role="main"]')
         except NoSuchElementException:
             try:
                 play_button = self.driver.find_element_by_xpath(
