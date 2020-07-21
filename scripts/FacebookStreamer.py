@@ -57,17 +57,16 @@ class StreamBot:
         password_box.send_keys(Keys.ENTER)
         time.sleep(self.wait_increment * 2)
 
-        # check if there is a disabled screen
+        # check if there is a search bar (indicates that the streamer is good)
         active = True
         try:
             _ = self.driver.find_element_by_xpath(
-                '//img[@class="_96id"]')
+                '//input[@type="search"]')
+        except NoSuchElementException:
             active = False
 
             # close the streamer
             self.quit()
-        except NoSuchElementException:
-            pass
 
         return active
 
