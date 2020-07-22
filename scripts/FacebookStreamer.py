@@ -81,10 +81,10 @@ class StreamBot:
     def stream(self, streaming_link, timeout):
         # click the me button to redirect from security
         try:
-            me_button = self.driver.find_element_by_xpath('//a[@href="/me/"]')
-        except NoSuchElementException:
             me_button = self.driver.find_element_by_xpath(
                 '//a[@title="Profil"]')
+        except NoSuchElementException:
+            pass
 
         me_button.click()
         time.sleep(self.wait_increment)
