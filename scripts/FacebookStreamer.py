@@ -3,7 +3,7 @@ from selenium.common.exceptions import NoSuchElementException, ElementNotInterac
 from selenium.webdriver.common.keys import Keys
 import time
 
-WAIT_INCREMENT = 10
+WAIT_INCREMENT = 5
 
 
 class StreamBot:
@@ -73,6 +73,11 @@ class StreamBot:
         return active
 
     def stream(self, streaming_link, timeout):
+        # click the me button to redirect from security
+        me_button = self.driver.find_element_by_xpath('//a[@href="/me/"]')
+        me_button.click()
+        time.sleep(self.wait_increment)
+
         # go to the link
         self.driver.get(streaming_link)
         time.sleep(self.wait_increment * 2)
@@ -125,9 +130,9 @@ class StreamBot:
 if __name__ == '__main__':
     proxy = {
         "id": 1,
-        "host": "181.41.210.184",
+        "host": "181.41.201.203",
         "port": "4444",
-        "email": "100039079848780",
+        "email": "100039079883245",
         "email_password": "888999",
         "username": "1a9e45a34f",
         "password": "OPSXjqHF",
