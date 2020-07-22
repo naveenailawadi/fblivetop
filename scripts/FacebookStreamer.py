@@ -3,7 +3,7 @@ from selenium.common.exceptions import NoSuchElementException, ElementNotInterac
 from selenium.webdriver.common.keys import Keys
 import time
 
-WAIT_INCREMENT = 15
+WAIT_INCREMENT = 10
 
 
 class StreamBot:
@@ -62,11 +62,13 @@ class StreamBot:
         try:
             _ = self.driver.find_element_by_xpath(
                 '//input[@type="search"]')
+            print('Streamer is active')
         except NoSuchElementException:
             active = False
 
             # close the streamer
             self.quit()
+            print('Streamer is inactive')
 
         return active
 
@@ -75,10 +77,16 @@ class StreamBot:
         self.driver.get(streaming_link)
         time.sleep(self.wait_increment * 2)
 
+        # send a few enters to the page to get rid of any particular messages
+        page = self.driver.find_element_by_xpath('//body')
+        for i in range(3):
+            page.send_keys(Keys.ENTER)
+            time.sleep(0.5)
+
         # handle for new and old facebook sites
         try:
-            play_button = self.driver.find_element_by_xpath(
-                '//i//div')
+            play_button = self.driver.find_elements_by_xpath(
+                '//div[@role="presentation"]')[-1]
         except NoSuchElementException:
             try:
                 play_button = self.driver.find_element_by_xpath(
@@ -117,10 +125,10 @@ class StreamBot:
 if __name__ == '__main__':
     proxy = {
         "id": 1,
-        "host": "138.229.96.79",
+        "host": "181.41.210.184",
         "port": "4444",
-        "email": "williams_michelle292@mittywe.xyz",
-        "email_password": "22SzTTPmqN",
+        "email": "100039079848780",
+        "email_password": "888999",
         "username": "1a9e45a34f",
         "password": "OPSXjqHF",
         "active": True,
