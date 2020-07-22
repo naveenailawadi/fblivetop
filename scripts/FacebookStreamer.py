@@ -62,19 +62,30 @@ class StreamBot:
         try:
             _ = self.driver.find_element_by_xpath(
                 '//input[@type="search"]')
-            print('Streamer is active')
         except NoSuchElementException:
             active = False
 
-            # close the streamer
+        # check for the other type of account
+        try:
+            _ = self.driver.find_element_by_xpath('//div[@role="search"]')
+            active = True
+        except NoSuchElementException:
+            pass
+
+        # quit if inactive
+        if not active:
             self.quit()
-            print('Streamer is inactive')
 
         return active
 
     def stream(self, streaming_link, timeout):
         # click the me button to redirect from security
-        me_button = self.driver.find_element_by_xpath('//a[@href="/me/"]')
+        try:
+            me_button = self.driver.find_element_by_xpath('//a[@href="/me/"]')
+        except NoSuchElementException:
+            me_button = self.driver.find_element_by_xpath(
+                '//a[@title="Profil"]')
+
         me_button.click()
         time.sleep(self.wait_increment)
 
@@ -92,7 +103,7 @@ class StreamBot:
         try:
             play_button = self.driver.find_elements_by_xpath(
                 '//div[@role="presentation"]')[-1]
-        except NoSuchElementException:
+        except IndexError:
             try:
                 play_button = self.driver.find_element_by_xpath(
                     '//i[@id="u_1_0"]')
@@ -144,4 +155,4 @@ if __name__ == '__main__':
     bot.check_proxy()
     bot.login(proxy['email'], proxy['email_password'])
     bot.stream(
-        'https://www.facebook.com/StoneMountain64/videos/255749355672787', 30)
+        'https://www.facebook.com/watch/live/?v=314935562992573&ref=watch_permalink', 30)
