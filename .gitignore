@@ -34,3 +34,6 @@ geckodriver.log
 admin_config.py
 secrets.py
 config.json
+
+# pdfs with information
+*.pdf

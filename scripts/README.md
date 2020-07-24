@@ -14,3 +14,8 @@
 
 ## FacebookStreamer.py
 - This contains the proprietary code with scalable objects
+
+## Contact
+- Contact the development team via https://entredeveloperslab.com/contact
+- Software warranties are included for 30 days
+    - This can be extended by request with a negotiated retainer

@@ -74,14 +74,17 @@ if __name__ == '__main__':
         except KeyError:
             time.sleep(DEFAULT_SLEEP_SPACING)
 
+    start = time.time()
+
     # join the processes
     for p in proc:
         p.join()
 
-    # run perpetually
     print(f"{len(ACCOUNTS) - len(bad_accounts)} streamers are running")
     print(f"Bad Accounts: \n{json.dumps(bad_accounts, indent=4)}")
-    count = 0
+
+    # run perpetually
+    count = time.time() - start
     while True:
         try:
             time.sleep(10)
@@ -96,5 +99,7 @@ if __name__ == '__main__':
         # break on
         if count >= end_stream:
             break
+        else:
+            print(f"{count} out of {end_stream} seconds have elapsed")
 
     print('Everything is closed!')
