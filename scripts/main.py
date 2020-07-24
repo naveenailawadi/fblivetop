@@ -1,6 +1,7 @@
 from FacebookStreamer import StreamBot
 from selenium.common.exceptions import NoSuchElementException
 from multiprocessing import Process
+from socket import timeout as TimeOutError
 import json
 import time
 
@@ -26,19 +27,27 @@ bad_accounts = []
 def run(stream_link, account, timeout):
     try:
         streamer = StreamBot(
-            proxy=account['proxy'], sleep_increment=WAIT_INCREMENT)
-        print(f"Opened {account['email']} on {account['proxy']}")
+            proxy=account['proxy'], wait_increment=WAIT_INCREMENT)
     except KeyError:
-        streamer = StreamBot(sleep_increment=WAIT_INCREMENT)
-        print(f"Opened {account['email']} without a proxy")
+        streamer = StreamBot(wait_increment=WAIT_INCREMENT)
 
     try:
         # login
-        streamer.login(account['email'], account['password'])
-        open_streamers.append(streamer)
+        active = streamer.login(account['email'], account['password'])
 
-        # start streaming
-        streamer.stream(stream_link, timeout)
+        if active:
+            print(f"\nOpened {account['email']}")
+            open_streamers.append(streamer)
+
+            # start streaming (and except os errors)
+            try:
+                streamer.stream(stream_link, timeout)
+            except OSError:
+                pass
+            except TimeOutError:
+                pass
+        else:
+            bad_accounts.append(streamer)
     except NoSuchElementException:
         print(f"Failed to open streamer with {account['email']}")
         bad_accounts.append(account)
@@ -49,7 +58,7 @@ if __name__ == '__main__':
     # Primarily: get the streaming link
     stream_link = input('Stream Link: ')
     end_stream = 60 * float(input('Streaming minutes: '))
-    print('\n\n')
+    print('\n')
 
     # start the processes
     proc = []

@@ -83,10 +83,10 @@ class StreamBot:
         try:
             me_button = self.driver.find_element_by_xpath(
                 '//a[@title="Profil"]')
+            me_button.click()
         except NoSuchElementException:
             pass
 
-        me_button.click()
         time.sleep(self.wait_increment)
 
         # go to the link
@@ -141,12 +141,12 @@ class StreamBot:
 if __name__ == '__main__':
     proxy = {
         "id": 1,
-        "host": "181.41.201.203",
-        "port": "4444",
-        "email": "100039079883245",
-        "email_password": "888999",
-        "username": "1a9e45a34f",
-        "password": "OPSXjqHF",
+        "host": "209.99.174.249",
+        "port": "12345",
+        "email": "anderson_ashley1279@stareown.xyz",
+        "email_password": "9hYpaTcGqu",
+        "username": "test567",
+        "password": "fdf45",
         "active": True,
         "previous_activity_date": "1593642500"
     }
