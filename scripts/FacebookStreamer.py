@@ -102,7 +102,7 @@ class StreamBot:
         # handle for new and old facebook sites
         try:
             play_button = self.driver.find_elements_by_xpath(
-                '//div[@role="presentation"]')[-1]
+                '//button[@data-hover="tooltip"]')[0]
         except IndexError:
             try:
                 play_button = self.driver.find_element_by_xpath(

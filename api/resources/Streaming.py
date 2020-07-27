@@ -127,6 +127,7 @@ class StreamingResource(Resource):
             # add the bot to the bots
             if active:
                 self.add_bot(newest_model.id)
+                print(f"Bots {len(self.bots)}: {self.bots}")
 
         for p in self.proc:
             p.join()
@@ -138,7 +139,7 @@ class StreamingResource(Resource):
         print(f"starting stream on link {stream_link}")
         try:
             streamer.stream(stream_link, timeout)
-            print(f"Stream on link {stream_link} started successfully")
+            print(f"Streamed {stream_link} successfully")
         except MaxRetryError:
             print(f"Failed to connect on stream with streamer {streamer.id}")
 
