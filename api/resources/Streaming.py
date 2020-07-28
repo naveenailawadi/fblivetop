@@ -194,11 +194,9 @@ class StreamingResource(Resource):
 
     def check_bot(self, streamer_id):
         stream_model = StreamerModel.query.filter_by(id=streamer_id).first()
-        print(f"Found model in database associated with {streamer_id}")
 
         streamer = StreamBot(stream_model.proxy_dict(),
                              id=streamer_id)
-        print(f"Created streamer with id {streamer_id}")
 
         # check the login
         active = streamer.login(

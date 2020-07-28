@@ -20,6 +20,7 @@ class StreamBot:
         options.add_argument('--window-size=1420,1080')
         options.add_argument('--disable-gpu')
         options.add_argument('--disable-notifications')
+        options.add_argument('--dns-prefetch-disable')
 
         if headless:
             options.add_argument('--headless')
@@ -113,6 +114,9 @@ class StreamBot:
         if play_button:
             try:
                 play_button.click()
+                if self.id:
+                    print(
+                        f"Pressed play on {streaming_link} with streamer {self.id}")
             except ElementNotInteractableException:
                 print('Play button already clicked')
                 pass
