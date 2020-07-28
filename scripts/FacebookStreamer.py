@@ -97,7 +97,7 @@ class StreamBot:
 
         # go to the link
         self.driver.get(streaming_link)
-        time.sleep(self.wait_increment * 2)
+        time.sleep(self.wait_increment * 4)
 
         # send a few enters to the page to get rid of any particular messages
         page = self.driver.find_element_by_xpath('//body')
@@ -108,18 +108,20 @@ class StreamBot:
         # handle for new and old facebook sites
         try:
             play_button = self.driver.find_elements_by_xpath(
-                '//button[@type="button"][@tabindex="0"]/parent::*')[0]
+                '//button[@type="button"][@tabindex="0"]/..')[0]
             play_button.click()
-            print(f"Pressed play on {streaming_link} with streamer {self.id} (old FB UI)")
+            print(
+                f"Pressed play on {streaming_link} with streamer {self.id} (old FB UI)")
         except IndexError:
             try:
                 play_button = self.driver.find_element_by_xpath(
-                    '//div[@aria-label="Play"]/parent::*')
+                    '//div[@aria-label="Play"]/..')
                 play_button.click()
-                print(f"Pressed play on {streaming_link} with streamer {self.id} (new FB UI)")
+                print(
+                    f"Pressed play on {streaming_link} with streamer {self.id} (new FB UI)")
             except NoSuchElementException:
                 pause_button = self.driver.find_element_by_xpath(
-                    '//div[@aria-label="Pause"]/parent::*')
+                    '//div[@aria-label="Pause"]/..')
                 print(f"Already playing with streamer {self.id}")
 
         # stop streaming on timeout
@@ -138,18 +140,17 @@ class StreamBot:
 if __name__ == '__main__':
     proxy = {
         "id": 1,
-        "host": "209.99.174.249",
-        "port": "12345",
-        "email": "anderson_ashley1279@stareown.xyz",
-        "email_password": "9hYpaTcGqu",
-        "username": "test567",
-        "password": "fdf45",
+        "host": "152.44.108.63",
+        "port": "4444",
+        "email": "100039080537009",
+        "email_password": "888999",
+        "username": "1a9e45a34f",
+        "password": "OPSXjqHF",
         "active": True,
         "previous_activity_date": "1593642500"
     }
 
     bot = StreamBot(proxy=proxy, headless=False)
-    bot.check_proxy()
     bot.login(proxy['email'], proxy['email_password'])
     bot.stream(
         'https://www.facebook.com/watch/live/?v=314935562992573&ref=watch_permalink', 30)
