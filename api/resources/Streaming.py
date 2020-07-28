@@ -120,6 +120,7 @@ class StreamingResource(Resource):
 
             # break if no more streamers
             if not newest_model:
+                print(f"No more streamers found")
                 break
 
             streamer, active = self.check_bot(newest_model)
@@ -127,8 +128,8 @@ class StreamingResource(Resource):
             # add the bot to the bots
             if active:
                 self.add_bot(newest_model.id)
-                print(f"Bots {len(self.bots)}: {self.bots}")
 
+        print('Joining all threads')
         for p in self.proc:
             p.join()
 
@@ -136,10 +137,10 @@ class StreamingResource(Resource):
 
     def start_stream(self, streamer, stream_link, timeout):
         # start streaming
-        print(f"starting stream on link {stream_link}")
+        print(f"starting stream on link {stream_link} with {streamer.id}")
         try:
             streamer.stream(stream_link, timeout)
-            print(f"Streamed {stream_link} successfully")
+            print(f"Streamed {stream_link} successfully with {streamer.id}")
         except MaxRetryError:
             print(f"Failed to connect on stream with streamer {streamer.id}")
 
@@ -218,7 +219,7 @@ class StreamingResource(Resource):
             p.start()
             self.proc.append(p)
         else:
-            print(f"Streamer with id {streamer} is not active")
+            print(f"Streamer with id {streamer_id} is not active")
             stream_model = StreamerModel.query.filter_by(
                 id=streamer_id).first()
             # set the model to inactive

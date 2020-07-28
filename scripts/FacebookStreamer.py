@@ -48,6 +48,8 @@ class StreamBot:
         try:
             self.driver.get('https://www.facebook.com/')
         except TimeoutException:
+            print(f"Timed out with streamer id {self.id}")
+            self.quit()
             return False
         time.sleep(self.wait_increment)
 
@@ -106,35 +108,22 @@ class StreamBot:
         # handle for new and old facebook sites
         try:
             play_button = self.driver.find_elements_by_xpath(
-                '//button[@type="button"][@tabindex="0"]')[0]
+                '//button[@type="button"][@tabindex="0"]/parent::*')[0]
+            play_button.click()
+            print(f"Pressed play on {streaming_link} with streamer {self.id} (old FB UI)")
         except IndexError:
             try:
-                play_button = self.driver.find_element_by_xpath('//div[@aria-label="Play"]')
-            except NoSuchElementException:
-                pause_button = self.driver.find_element_by_xpath('//div[@aria-label="Pause"]')
-                play_button = None
-                print('Already playing')
-
-        if play_button:
-            try:
+                play_button = self.driver.find_element_by_xpath(
+                    '//div[@aria-label="Play"]/parent::*')
                 play_button.click()
-                if self.id:
-                    print(
-                        f"Pressed play on {streaming_link} with streamer {self.id}")
-            except ElementNotInteractableException:
-                print('Play button cannot be clicked')
-                pass
+                print(f"Pressed play on {streaming_link} with streamer {self.id} (new FB UI)")
+            except NoSuchElementException:
+                pause_button = self.driver.find_element_by_xpath(
+                    '//div[@aria-label="Pause"]/parent::*')
+                print(f"Already playing with streamer {self.id}")
 
         # stop streaming on timeout
-        start = time.time()
-        end = time.time()
-
-        while True:
-            time.sleep(10)
-            end = time.time()
-
-            if (end - start) > timeout:
-                break
+        time.sleep(timeout)
 
         # close the streamer
         self.quit()
