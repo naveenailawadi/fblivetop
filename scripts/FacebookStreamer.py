@@ -1,9 +1,9 @@
 from seleniumwire import webdriver
-from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException
+from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException, TimeoutException
 from selenium.webdriver.common.keys import Keys
 import time
 
-WAIT_INCREMENT = 5
+WAIT_INCREMENT = 10
 
 
 class StreamBot:
@@ -45,7 +45,10 @@ class StreamBot:
     # add some functions to login and stream things here (returns boolean on availability)
     def login(self, email, password):
         # go to facebook
-        self.driver.get('https://www.facebook.com/')
+        try:
+            self.driver.get('https://www.facebook.com/')
+        except TimeoutException:
+            return False
         time.sleep(self.wait_increment)
 
         # put in the keys at the correct box
@@ -103,13 +106,14 @@ class StreamBot:
         # handle for new and old facebook sites
         try:
             play_button = self.driver.find_elements_by_xpath(
-                '//button[@data-hover="tooltip"]')[0]
+                '//button[@type="button"][@tabindex="0"]')[0]
         except IndexError:
             try:
-                play_button = self.driver.find_element_by_xpath(
-                    '//i[@id="u_1_0"]')
+                play_button = self.driver.find_element_by_xpath('//div[@aria-label="Play"]')
             except NoSuchElementException:
+                pause_button = self.driver.find_element_by_xpath('//div[@aria-label="Pause"]')
                 play_button = None
+                print('Already playing')
 
         if play_button:
             try:
@@ -118,7 +122,7 @@ class StreamBot:
                     print(
                         f"Pressed play on {streaming_link} with streamer {self.id}")
             except ElementNotInteractableException:
-                print('Play button already clicked')
+                print('Play button cannot be clicked')
                 pass
 
         # stop streaming on timeout
