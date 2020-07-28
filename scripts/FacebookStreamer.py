@@ -121,7 +121,7 @@ class StreamBot:
                     f"Pressed play on {streaming_link} with streamer {self.id} (new FB UI)")
             except NoSuchElementException:
                 pause_button = self.driver.find_element_by_xpath(
-                    '//div[@aria-label="Pause"]/..')
+                    '//div[@aria-label="Pause"]')
                 print(f"Already playing with streamer {self.id}")
 
         # stop streaming on timeout
