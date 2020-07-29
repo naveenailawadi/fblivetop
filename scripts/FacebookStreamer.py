@@ -112,10 +112,12 @@ class StreamBot:
             play_button.click()
             print(
                 f"Pressed play on {streaming_link} with streamer {self.id} (old FB UI)")
+        except ElementNotInteractableException:
+            print(f"Could not interact with page with streamer {self.id} (old FB UI)")
         except IndexError:
             try:
                 play_button = self.driver.find_element_by_xpath(
-                    '//div[@aria-label="Play"]/..')
+                    '//div[@aria-label="Play"]')
                 play_button.click()
                 print(
                     f"Pressed play on {streaming_link} with streamer {self.id} (new FB UI)")
@@ -123,6 +125,8 @@ class StreamBot:
                 pause_button = self.driver.find_element_by_xpath(
                     '//div[@aria-label="Pause"]')
                 print(f"Already playing with streamer {self.id}")
+            except ElementNotInteractableException:
+                print(f"Could not interact with page with streamer {self.id} (new FB UI)")
 
         # stop streaming on timeout
         time.sleep(timeout)
