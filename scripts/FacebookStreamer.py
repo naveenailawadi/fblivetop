@@ -1,5 +1,5 @@
 from seleniumwire import webdriver
-from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException, TimeoutException
+from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException, TimeoutException, ElementClickInterceptedException
 from selenium.webdriver.common.keys import Keys
 import time
 
@@ -113,7 +113,12 @@ class StreamBot:
             print(
                 f"Pressed play on {streaming_link} with streamer {self.id} (old FB UI)")
         except ElementNotInteractableException:
-            print(f"Could not interact with page with streamer {self.id} (old FB UI)")
+            print(
+                f"Could not interact with page with streamer {self.id} (old FB UI)")
+        except ElementClickInterceptedException:
+            print(
+                f"Could not interact with page with streamer {self.id} (old FB UI)")
+
         except IndexError:
             try:
                 play_button = self.driver.find_element_by_xpath(
@@ -126,7 +131,11 @@ class StreamBot:
                     '//div[@aria-label="Pause"]')
                 print(f"Already playing with streamer {self.id}")
             except ElementNotInteractableException:
-                print(f"Could not interact with page with streamer {self.id} (new FB UI)")
+                print(
+                    f"Could not interact with page with streamer {self.id} (new FB UI)")
+            except ElementClickInterceptedException:
+                print(
+                    f"Could not interact with page with streamer {self.id} (new FB UI)")
 
         # stop streaming on timeout
         time.sleep(timeout)
