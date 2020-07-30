@@ -97,7 +97,8 @@ class StreamBot:
 
         # go to the link
         self.driver.get(streaming_link)
-        time.sleep(self.wait_increment * 4)
+        # hardcode this sleep for choice of client
+        time.sleep(150)
 
         # send a few enters to the page to get rid of any particular messages
         page = self.driver.find_element_by_xpath('//body')
