@@ -100,7 +100,8 @@ class StreamBot:
             dropdown = self.driver.find_element_by_xpath(
                 '//a[@aria-labelledby="userNavigationLabel"]')
             dropdown.click()
-            switch = self.driver.find_element_by_xpath('//a[@role="menuitem"]')
+            switch = self.driver.find_elements_by_xpath(
+                '//a[@role="menuitem"]')[-1]
             switch.click()
             print(f"Switched streamer {self.id} to new UI")
             time.sleep(self.wait_increment)
@@ -136,9 +137,7 @@ class StreamBot:
             time.sleep(0.5)
 
         # play not necessary with new UI
-        '''
         self.click_play(streaming_link)
-        '''
 
         # stop streaming on timeout
         print(f"Will close streamer {self.id} in {timeout} seconds")
@@ -151,35 +150,21 @@ class StreamBot:
 
     def click_play(self, streaming_link):
         try:
-            play_button = self.driver.find_elements_by_xpath(
-                '//button[@type="button"][@tabindex="0"]')[0]
+            play_button = self.driver.find_element_by_xpath(
+                '//div[@aria-label="Play video"]')
             play_button.click()
             print(
-                f"Pressed play on {streaming_link} with streamer {self.id} (old FB UI)")
+                f"Pressed play on {streaming_link} with streamer {self.id}")
+        except NoSuchElementException:
+            _ = self.driver.find_element_by_xpath(
+                '//div[@aria-label="Pause"]')
+            print(f"Already playing with streamer {self.id}")
         except ElementNotInteractableException:
             print(
-                f"Could not interact with page with streamer {self.id} (old FB UI)")
+                f"Could not interact with page with streamer {self.id}")
         except ElementClickInterceptedException:
             print(
-                f"Could not click with streamer {self.id} (old FB UI)")
-
-        except IndexError:
-            try:
-                play_button = self.driver.find_element_by_xpath(
-                    '//div[@aria-label="Play"]')
-                play_button.click()
-                print(
-                    f"Pressed play on {streaming_link} with streamer {self.id} (new FB UI)")
-            except NoSuchElementException:
-                pause_button = self.driver.find_element_by_xpath(
-                    '//div[@aria-label="Pause"]')
-                print(f"Already playing with streamer {self.id}")
-            except ElementNotInteractableException:
-                print(
-                    f"Could not interact with page with streamer {self.id} (new FB UI)")
-            except ElementClickInterceptedException:
-                print(
-                    f"Could not click with streamer {self.id} (new FB UI)")
+                f"Could not click with streamer {self.id}")
 
     def check_proxy(self):
         self.driver.get('https://whatsmyip.com/')
