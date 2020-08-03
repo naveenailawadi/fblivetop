@@ -152,10 +152,13 @@ class StreamBot:
                     f"Could not click with streamer {self.id} (new FB UI)")
 
         # stop streaming on timeout
+        print(f"Will close streamer {self.id} in {self.timeout} seconds")
         time.sleep(timeout)
 
         # close the streamer
         self.quit()
+
+        print(f"Closed streamer {self.id}")
 
     def check_proxy(self):
         self.driver.get('https://whatsmyip.com/')
