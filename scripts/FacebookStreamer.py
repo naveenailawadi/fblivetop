@@ -48,7 +48,7 @@ class StreamBot:
         try:
             self.driver.get('https://www.facebook.com/')
         except TimeoutException:
-            print(f"Timed out with streamer id {self.id}")
+            print(f"Timed out on login with streamer id {self.id}")
             self.quit()
             return False
         time.sleep(self.wait_increment)
@@ -96,9 +96,22 @@ class StreamBot:
         time.sleep(self.wait_increment)
 
         # go to the link
-        self.driver.get(streaming_link)
+        count = 1
+        while True:
+            try:
+                self.driver.get(streaming_link)
+                break
+            except TimeoutException:
+                print(
+                    f"Timed out on stream with streamer id {self.id} ({count})")
+
+            # break on the third try
+            if count >= 3:
+                break
+
+            count += 1
         # hardcode this sleep for choice of client
-        time.sleep(150)
+        time.sleep(60)
 
         # send a few enters to the page to get rid of any particular messages
         page = self.driver.find_element_by_xpath('//body')
@@ -118,7 +131,7 @@ class StreamBot:
                 f"Could not interact with page with streamer {self.id} (old FB UI)")
         except ElementClickInterceptedException:
             print(
-                f"Could not interact with page with streamer {self.id} (old FB UI)")
+                f"Could not click with streamer {self.id} (old FB UI)")
 
         except IndexError:
             try:
@@ -136,7 +149,7 @@ class StreamBot:
                     f"Could not interact with page with streamer {self.id} (new FB UI)")
             except ElementClickInterceptedException:
                 print(
-                    f"Could not interact with page with streamer {self.id} (new FB UI)")
+                    f"Could not click with streamer {self.id} (new FB UI)")
 
         # stop streaming on timeout
         time.sleep(timeout)
