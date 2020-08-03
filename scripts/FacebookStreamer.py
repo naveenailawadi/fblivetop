@@ -127,6 +127,7 @@ class StreamBot:
                 break
 
             count += 1
+
         # hardcode this sleep for choice of client
         time.sleep(60)
 
@@ -137,7 +138,7 @@ class StreamBot:
             time.sleep(0.5)
 
         # play not necessary with new UI
-        self.click_play(streaming_link)
+        # self.click_play(streaming_link)
 
         # stop streaming on timeout
         print(f"Will close streamer {self.id} in {timeout} seconds")
@@ -151,7 +152,7 @@ class StreamBot:
     def click_play(self, streaming_link):
         try:
             play_button = self.driver.find_element_by_xpath(
-                '//div[@aria-label="Play video"]')
+                '//img[@src="/images/video/play_72dp.png"]/..')
             play_button.click()
             print(
                 f"Pressed play on {streaming_link} with streamer {self.id}")
@@ -186,8 +187,8 @@ if __name__ == '__main__':
         "previous_activity_date": "1593642500"
     }
 
-    bot = StreamBot(proxy=proxy, headless=False)
+    bot = StreamBot(proxy=proxy, headless=False, id=1)
     bot.check_proxy()
     bot.login(proxy['email'], proxy['email_password'])
     bot.stream(
-        'https://www.facebook.com/423668631008118/videos/295658711688120/', 3000)
+        'https://www.facebook.com/184096565021911/videos/602367887308937/', 3000)
