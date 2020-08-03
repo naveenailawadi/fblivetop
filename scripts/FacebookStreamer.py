@@ -122,7 +122,7 @@ class StreamBot:
         # handle for new and old facebook sites
         try:
             play_button = self.driver.find_elements_by_xpath(
-                '//button[@type="button"][@tabindex="0"]/..')[0]
+                '//button[@type="button"][@tabindex="0"]')[0]
             play_button.click()
             print(
                 f"Pressed play on {streaming_link} with streamer {self.id} (old FB UI)")
@@ -152,7 +152,7 @@ class StreamBot:
                     f"Could not click with streamer {self.id} (new FB UI)")
 
         # stop streaming on timeout
-        print(f"Will close streamer {self.id} in {self.timeout} seconds")
+        print(f"Will close streamer {self.id} in {timeout} seconds")
         time.sleep(timeout)
 
         # close the streamer
@@ -170,9 +170,9 @@ class StreamBot:
 if __name__ == '__main__':
     proxy = {
         "id": 1,
-        "host": "152.44.108.63",
+        "host": "181.41.219.87",
         "port": "4444",
-        "email": "100039080537009",
+        "email": "100039077752920",
         "email_password": "888999",
         "username": "1a9e45a34f",
         "password": "OPSXjqHF",
@@ -183,4 +183,4 @@ if __name__ == '__main__':
     bot = StreamBot(proxy=proxy, headless=False)
     bot.login(proxy['email'], proxy['email_password'])
     bot.stream(
-        'https://www.facebook.com/watch/live/?v=314935562992573&ref=watch_permalink', 30)
+        'https://www.facebook.com/423668631008118/videos/295658711688120/', 30)
