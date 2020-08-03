@@ -204,6 +204,5 @@ if __name__ == '__main__':
     bot = StreamBot(proxy=proxy, headless=False)
     bot.check_proxy()
     bot.login(proxy['email'], proxy['email_password'])
-    time.sleep(10000)
     bot.stream(
         'https://www.facebook.com/423668631008118/videos/295658711688120/', 3000)
