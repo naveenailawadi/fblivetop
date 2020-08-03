@@ -95,6 +95,22 @@ class StreamBot:
 
         time.sleep(self.wait_increment)
 
+        # change the facebook UI
+        try:
+            dropdown = self.driver.find_element_by_xpath(
+                '//a[@aria-labelledby="userNavigationLabel"]')
+            dropdown.click()
+            switch = self.driver.find_element_by_xpath('//a[@role="menuitem"]')
+            switch.click()
+            print(f"Switched streamer {self.id} to new UI")
+            time.sleep(self.wait_increment)
+        except NoSuchElementException:
+            # try to find something unique to the new fb ui
+            _ = self.driver.find_element_by_xpath(
+                '//a[@aria-label="Facebook"]')
+
+            print(f"Already using new fb UI with streamer {self.id}")
+
         # go to the link
         count = 1
         while True:
@@ -119,7 +135,21 @@ class StreamBot:
             page.send_keys(Keys.ENTER)
             time.sleep(0.5)
 
-        # handle for new and old facebook sites
+        # play not necessary with new UI
+        '''
+        self.click_play(streaming_link)
+        '''
+
+        # stop streaming on timeout
+        print(f"Will close streamer {self.id} in {timeout} seconds")
+        time.sleep(timeout)
+
+        # close the streamer
+        self.quit()
+
+        print(f"Closed streamer {self.id}")
+
+    def click_play(self, streaming_link):
         try:
             play_button = self.driver.find_elements_by_xpath(
                 '//button[@type="button"][@tabindex="0"]')[0]
@@ -151,15 +181,6 @@ class StreamBot:
                 print(
                     f"Could not click with streamer {self.id} (new FB UI)")
 
-        # stop streaming on timeout
-        print(f"Will close streamer {self.id} in {timeout} seconds")
-        time.sleep(timeout)
-
-        # close the streamer
-        self.quit()
-
-        print(f"Closed streamer {self.id}")
-
     def check_proxy(self):
         self.driver.get('https://whatsmyip.com/')
 
@@ -181,6 +202,8 @@ if __name__ == '__main__':
     }
 
     bot = StreamBot(proxy=proxy, headless=False)
+    bot.check_proxy()
     bot.login(proxy['email'], proxy['email_password'])
+    time.sleep(10000)
     bot.stream(
-        'https://www.facebook.com/423668631008118/videos/295658711688120/', 30)
+        'https://www.facebook.com/423668631008118/videos/295658711688120/', 3000)
