@@ -101,7 +101,7 @@ class StreamBot:
                 '//a[@aria-labelledby="userNavigationLabel"]')
             dropdown.click()
             switch = self.driver.find_elements_by_xpath(
-                '//a[@role="menuitem"]')[-1]
+                '//a[@role="menuitem"]')[-2]
             switch.click()
             print(f"Switched streamer {self.id} to new UI")
             time.sleep(self.wait_increment)
@@ -146,7 +146,6 @@ class StreamBot:
 
         # close the streamer
         self.quit()
-
         print(f"Closed streamer {self.id}")
 
     def click_play(self, streaming_link):
