@@ -96,21 +96,7 @@ class StreamBot:
         time.sleep(self.wait_increment)
 
         # change the facebook UI
-        try:
-            dropdown = self.driver.find_element_by_xpath(
-                '//a[@aria-labelledby="userNavigationLabel"]')
-            dropdown.click()
-            switch = self.driver.find_elements_by_xpath(
-                '//a[@role="menuitem"]')[-2]
-            switch.click()
-            print(f"Switched streamer {self.id} to new UI")
-            time.sleep(self.wait_increment)
-        except NoSuchElementException:
-            # try to find something unique to the new fb ui
-            _ = self.driver.find_element_by_xpath(
-                '//a[@aria-label="Facebook"]')
-
-            print(f"Already using new fb UI with streamer {self.id}")
+        # self.change_ui()
 
         # go to the link
         count = 1
@@ -166,11 +152,31 @@ class StreamBot:
             print(
                 f"Could not click with streamer {self.id}")
 
+    def change_ui(self):
+        try:
+            dropdown = self.driver.find_element_by_xpath(
+                '//a[@aria-labelledby="userNavigationLabel"]')
+            dropdown.click()
+            switch = self.driver.find_elements_by_xpath(
+                '//a[@role="menuitem"]')[-2]
+            try:
+                switch.click()
+            except ElementNotInteractableException:
+                print(f"Could not interact with element reading {switch.text}")
+            print(f"Switched streamer {self.id} to new UI")
+            time.sleep(self.wait_increment)
+        except NoSuchElementException:
+            # try to find something unique to the new fb ui
+            _ = self.driver.find_element_by_xpath(
+                '//a[@aria-label="Facebook"]')
+
+            print(f"Already using new fb UI with streamer {self.id}")
+
     def check_proxy(self):
         self.driver.get('https://whatsmyip.com/')
 
     def quit(self):
-        self.driver.quit()
+        self.driver.close()
 
 
 if __name__ == '__main__':
