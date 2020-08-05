@@ -21,6 +21,7 @@ class StreamBot:
         options.add_argument('--disable-gpu')
         options.add_argument('--disable-notifications')
         options.add_argument('--dns-prefetch-disable')
+        options.add_argument('--disable-dev-shm-usage')
 
         if headless:
             options.add_argument('--headless')
