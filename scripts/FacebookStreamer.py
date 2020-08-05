@@ -181,15 +181,12 @@ class StreamBot:
 
 if __name__ == '__main__':
     proxy = {
-        "id": 1,
-        "host": "181.41.219.87",
+        "host": "181.41.217.115",
         "port": "4444",
-        "email": "100039077752920",
-        "email_password": "888999",
+        "email": "funsasang@outlook.com",
+        "email_password": "Ad2wD8sz0M",
         "username": "1a9e45a34f",
         "password": "OPSXjqHF",
-        "active": True,
-        "previous_activity_date": "1593642500"
     }
 
     bot = StreamBot(proxy=proxy, headless=False, id=1)
