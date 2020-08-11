@@ -6,7 +6,8 @@ import time
 WAIT_INCREMENT = 10
 
 
-class StreamBot:
+# create a generic facebook bot class with useful functions
+class FacebookBot:
     def __init__(self, proxy=None, headless=True, wait_increment=WAIT_INCREMENT, id=None):
         # set the sleep increment
         self.wait_increment = wait_increment
@@ -85,6 +86,34 @@ class StreamBot:
 
         return active
 
+    def change_ui(self):
+        try:
+            dropdown = self.driver.find_element_by_xpath(
+                '//a[@aria-labelledby="userNavigationLabel"]')
+            dropdown.click()
+            switch = self.driver.find_elements_by_xpath(
+                '//a[@role="menuitem"]')[-2]
+            try:
+                switch.click()
+            except ElementNotInteractableException:
+                print(f"Could not interact with element reading {switch.text}")
+            print(f"Switched streamer {self.id} to new UI")
+            time.sleep(self.wait_increment)
+        except NoSuchElementException:
+            # try to find something unique to the new fb ui
+            _ = self.driver.find_element_by_xpath(
+                '//a[@aria-label="Facebook"]')
+
+            print(f"Already using new fb UI with streamer {self.id}")
+
+    def check_proxy(self):
+        self.driver.get('https://whatsmyip.com/')
+
+    def quit(self):
+        self.driver.close()
+
+
+class StreamBot(FacebookBot):
     def stream(self, streaming_link, timeout):
         # click the me button to redirect from security
         try:
@@ -153,45 +182,54 @@ class StreamBot:
             print(
                 f"Could not click with streamer {self.id}")
 
-    def change_ui(self):
+
+# create a bot similar to the streambot that likes posts
+class PostBot(FacebookBot):
+    def like_post(self, post_url):
+        self.driver.get(post_url)
+        time.sleep(self.wait_increment)
+
+        # click the like button
         try:
-            dropdown = self.driver.find_element_by_xpath(
-                '//a[@aria-labelledby="userNavigationLabel"]')
-            dropdown.click()
-            switch = self.driver.find_elements_by_xpath(
-                '//a[@role="menuitem"]')[-2]
-            try:
-                switch.click()
-            except ElementNotInteractableException:
-                print(f"Could not interact with element reading {switch.text}")
-            print(f"Switched streamer {self.id} to new UI")
-            time.sleep(self.wait_increment)
+            like_button = self.driver.find_element_by_xpath(
+                '//div[@role="button"][@tabindex="0"]//i[@role="img"]/../../../../..')
         except NoSuchElementException:
-            # try to find something unique to the new fb ui
-            _ = self.driver.find_element_by_xpath(
-                '//a[@aria-label="Facebook"]')
+            like_button = self.driver.find_element_by_xpath(
+                '//a[@role="button"][@tabindex="0"][@href="#"]//i/..')
 
-            print(f"Already using new fb UI with streamer {self.id}")
+        like_button.click()
 
-    def check_proxy(self):
-        self.driver.get('https://whatsmyip.com/')
+    def comment_on_post(self, post_url, comment):
+        self.driver.get(post_url)
+        time.sleep(self.wait_increment)
 
-    def quit(self):
-        self.driver.close()
+        # identify the text box
+        try:
+            text_box = self.driver.find_element_by_xpath(
+                '//div[@role="textbox"]')
+
+            text_box.send_keys(comment)
+            text_box.send_keys(Keys.ENTER)
+        except NoSuchElementException:
+            print(f"Could not find text box on post link {post_url}")
 
 
 if __name__ == '__main__':
     proxy = {
-        "host": "181.41.217.115",
+        "host": "191.101.145.192",
         "port": "4444",
-        "email": "funsasang@outlook.com",
-        "email_password": "Ad2wD8sz0M",
+        "email": "wargeymon9@hotmail.com",
+        "email_password": "PVzESyhBVb",
         "username": "1a9e45a34f",
         "password": "OPSXjqHF",
     }
 
-    bot = StreamBot(proxy=proxy, headless=False, id=1)
-    bot.check_proxy()
+    bot = PostBot(proxy=proxy, headless=False, id=1)
+    # bot.check_proxy()
     bot.login(proxy['email'], proxy['email_password'])
-    bot.stream(
-        'https://www.facebook.com/184096565021911/videos/602367887308937/', 3000)
+
+    post = 'https://www.facebook.com/clarissa.thomas.94/posts/10224281034478710'
+    bot.like_post(post)
+    bot.comment_on_post(post, 'Nice!')
+
+    # bot.quit()

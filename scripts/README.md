@@ -9,8 +9,8 @@
   - `wait_increment` changes the amount of time the bot uses between actions (login, streaming, etc.)
   - accounts can have custom `sleep_spacing` to allow "humanlike" streams
 
-## main.py
-- Running `python3 main.py` launches everything from the attached config file
+## stream.py
+- Running `python3 stream.py` launches everything from the attached config file to stream a video
 
 ## FacebookStreamer.py
 - This contains the proprietary code with scalable objects
