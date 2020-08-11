@@ -14,6 +14,10 @@ with open('config.json', 'r') as infile:
     DEFAULT_SLEEP_SPACING = info['default_sleep_spacing']
     HIDDEN_BROWSERS = info['hidden_browsers']
 
+    # get default actions
+    LIKE_DEFAULT = info['like_default']
+    COMMENT_DEFAULT = info['comment_default']
+
     # load the accounts
     ACCOUNTS = info['accounts']
 
@@ -24,12 +28,23 @@ bad_accounts = []
 
 
 # make a function to initialize the streamers with the proxy (if applicable)
-def run(stream_link, account, timeout):
+def run(post_link, account):
     try:
         post_bot = PostBot(
             proxy=account['proxy'], wait_increment=WAIT_INCREMENT)
     except KeyError:
         post_bot = PostBot(wait_increment=WAIT_INCREMENT)
+
+    # get liking information (and comment info)
+    try:
+        like_bool = account['like']
+    except KeyError:
+        like_bool = LIKE_DEFAULT
+
+    try:
+        comment = account['comment']
+    except KeyError:
+        comment = COMMENT_DEFAULT
 
     try:
         # login
@@ -39,13 +54,23 @@ def run(stream_link, account, timeout):
             print(f"\nOpened {account['email']}")
             open_streamers.append(post_bot)
 
-            # start streaming (and except os errors)
-            try:
-                post_bot.stream(stream_link, timeout)
-            except OSError:
-                pass
-            except TimeOutError:
-                pass
+            # like (and except os errors)
+            if like_bool:
+                try:
+                    post_bot.like_post(post_link)
+                except OSError:
+                    pass
+                except TimeOutError:
+                    pass
+
+            # comment if longer than 0 chars
+            if len(comment) > 0:
+                try:
+                    post_bot.comment_on_post(post_link, comment)
+                except OSError:
+                    pass
+                except TimeOutError:
+                    pass
         else:
             bad_accounts.append(post_bot)
     except NoSuchElementException:
@@ -56,14 +81,13 @@ def run(stream_link, account, timeout):
 
 if __name__ == '__main__':
     # Primarily: get the streaming link
-    stream_link = input('Stream Link: ')
-    end_stream = 60 * float(input('Streaming minutes: '))
+    post_link = input('Post Link: ')
     print('\n')
 
     # start the processes
     proc = []
     for account in ACCOUNTS:
-        p = Process(target=run, args=(stream_link, account, end_stream, ))
+        p = Process(target=run, args=(post_link, account, ))
         p.start()
 
         proc.append(p)

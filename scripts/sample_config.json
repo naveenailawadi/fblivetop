@@ -2,6 +2,8 @@
     "default_sleep_spacing": <seconds>,
     "wait_increment": <your wait time>,
     "hidden_browsers": true/false,
+    "like_default": true/false,
+    "comment_default": "<some default comment>"
     "accounts": [
         {
         "email": "<you_email@domain.com>",
@@ -13,6 +15,8 @@
                 "username": "<your username>",
                 "password": "<your password>"
             }
+        "comment": "<your comment>",
+        "like": true/false
         }
-    ]
+    ]x
 }
