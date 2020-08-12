@@ -31,9 +31,10 @@ bad_accounts = []
 def run(post_link, account):
     try:
         post_bot = PostBot(
-            proxy=account['proxy'], wait_increment=WAIT_INCREMENT)
+            proxy=account['proxy'], wait_increment=WAIT_INCREMENT, headless=HIDDEN_BROWSERS)
     except KeyError:
-        post_bot = PostBot(wait_increment=WAIT_INCREMENT)
+        post_bot = PostBot(wait_increment=WAIT_INCREMENT,
+                           headless=HIDDEN_BROWSERS)
 
     # get liking information (and comment info)
     try:
@@ -71,12 +72,12 @@ def run(post_link, account):
                     pass
                 except TimeOutError:
                     pass
+            post_bot.quit()
         else:
             bad_accounts.append(post_bot)
     except NoSuchElementException:
         print(f"Failed to open post_bot with {account['email']}")
         bad_accounts.append(account)
-        open
 
 
 if __name__ == '__main__':
