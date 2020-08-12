@@ -3,7 +3,7 @@
     "wait_increment": <your wait time>,
     "hidden_browsers": true/false,
     "like_default": true/false,
-    "comment_default": "<some default comment>"
+    "comment_default": "<some default comment>",
     "accounts": [
         {
         "email": "<you_email@domain.com>",
@@ -18,5 +18,5 @@
         "comment": "<your comment>",
         "like": true/false
         }
-    ]x
+    ]
 }
