@@ -3,7 +3,7 @@ from selenium.common.exceptions import NoSuchElementException, ElementNotInterac
 from selenium.webdriver.common.keys import Keys
 import time
 
-WAIT_INCREMENT = 10
+WAIT_INCREMENT = 5
 
 
 # create a generic facebook bot class with useful functions
@@ -215,21 +215,17 @@ class PostBot(FacebookBot):
 
 
 if __name__ == '__main__':
-    proxy = {
-        "host": "191.101.145.192",
-        "port": "4444",
-        "email": "wargeymon9@hotmail.com",
-        "email_password": "PVzESyhBVb",
-        "username": "1a9e45a34f",
-        "password": "OPSXjqHF",
-    }
+    import json
+    with open('config.json', 'r') as infile:
+        data = json.loads(infile.read())
 
-    bot = PostBot(proxy=proxy, headless=False, id=1)
-    # bot.check_proxy()
-    bot.login(proxy['email'], proxy['email_password'])
+    account = data['accounts'][0]
 
-    post = 'https://www.facebook.com/clarissa.thomas.94/posts/10224281034478710'
-    bot.like_post(post)
-    bot.comment_on_post(post, 'Nice!')
+    bot = StreamBot(proxy=account.get('proxy'), headless=False)
+    bot.check_proxy()
+    bot.login(account['email'], account['password'])
 
-    # bot.quit()
+    stream_link = 'https://www.facebook.com/nbstelevision/videos/782854559200781'
+    bot.stream(stream_link, 300)
+
+    bot.quit()
