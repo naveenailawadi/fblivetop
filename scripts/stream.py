@@ -27,9 +27,9 @@ bad_accounts = []
 def run(stream_link, account, timeout):
     try:
         streamer = StreamBot(
-            proxy=account['proxy'], wait_increment=WAIT_INCREMENT)
+            proxy=account['proxy'], wait_increment=WAIT_INCREMENT, headless=HIDDEN_BROWSERS)
     except KeyError:
-        streamer = StreamBot(wait_increment=WAIT_INCREMENT)
+        streamer = StreamBot(wait_increment=WAIT_INCREMENT, headless=HIDDEN_BROWSERS)
 
     try:
         # login
