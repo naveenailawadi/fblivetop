@@ -16,7 +16,7 @@ class FacebookBot:
         self.id = id
 
         # create a webdriver to work with
-        options = webdriver.ChromeOptions()
+        options = webdriver.FirefoxOptions()
         options.add_argument('--no-sandbox')
         options.add_argument('--window-size=1420,1080')
         options.add_argument('--disable-gpu')
@@ -41,7 +41,7 @@ class FacebookBot:
                 }
             }
 
-        self.driver = webdriver.Chrome(
+        self.driver = webdriver.Firefox(
             options=options, seleniumwire_options=prox_options)
 
     # add some functions to login and stream things here (returns boolean on availability)
