@@ -19,8 +19,8 @@
 ## Streaming
 - Running `python3 stream.py` launches everything from the attached config file to stream a video
 
-## Liking and Commenting
-- Running `python3 like_and_comment.py` will like and comment the inputted post
+## Liking, Commenting, and Sharing
+- Running `python3 interact.py` will like, comment, and share the inputted post
 
 ## FacebookStreamer.py
 - This contains the proprietary code with scalable objects (for all functions)

